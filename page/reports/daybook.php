@@ -62,8 +62,15 @@ class page_reports_daybook extends Page {
 			$day_transaction_model->addCondition('branch_id',$_GET['branch']);
 		}
  
-		$daybook_lister_grid->setModel($day_transaction_model,array('voucher_no','Narration','member_name','PermanentAddress','PanNo','account','amountDr','amountCr'));
+		if($_GET['voucher_type']){
+			$daybook_lister_grid->setModel($day_transaction_model,array('voucher_no','Narration','member_name','PermanentAddress','PanNo','account','amountDr','amountCr','Narration'));
+ 		}else{
+			$daybook_lister_grid->setModel($day_transaction_model,array('voucher_no','Narration','member_name','PermanentAddress','PanNo','account','amountDr','amountCr','Narration','transaction_type'));
+ 		}
+
 		$daybook_lister_grid->removeColumn('Narration');
+		$daybook_lister_grid->addFormatter('Narra','smallWrap');
+		$daybook_lister_grid->addOrder()->move('Narra','after','voucher_no')->now();
 		// $daybook_lister_grid->addPaginator(10);
 
 		$daybook_lister_grid->addSelectable($selectedVoucher);

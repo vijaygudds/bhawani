@@ -10,7 +10,7 @@
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
-		$account_type_array=array('%'=>'All','SM'=>'SM','DDS'=>'DDS','FixedAndMis'=>'Fixed And Mis','Recurring'=>'Recurring','SavingAndCurrent'=>'Saving And Current');
+		transactions_deposit
 		$form->addField('dropdown','account_type')->setValueList($account_type_array);
 		$form->addSubmit('GET List');
 		$grid=$this->add('Grid_AccountsBase');

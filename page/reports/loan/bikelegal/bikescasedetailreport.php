@@ -170,7 +170,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 		});
 		
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','premium_amount_received','current_balance','created_at','ActiveStatus','maturity_date','last_hearing_stage','account_guarantor','guarantor_fathername','gurantor_phone_number','gurantor_Address'];
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','bike_auctioned_on','Amount','no_of_emi','emi_amount','premium_amount_received','current_balance','created_at','ActiveStatus','maturity_date','last_hearing_stage','account_guarantor','guarantor_fathername','gurantor_phone_number','gurantor_Address'];
 
 		//$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','premium_amount_received','current_balance','created_at','ActiveStatus','maturity_date','last_hearing_stage'];
 		// $grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at','ActiveStatus','last_hearing_stage'];
@@ -300,7 +300,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 		// $account_model->addCondition('is_in_arbitration',false);
 
 		$grid->setModel($account_model,$grid_column_array);
-		$grid->addPaginator(100);
+		$grid->addPaginator(1000);
 
 		if($form->isSubmitted()){
 			$send = array('filter'=>1,'dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_status'=>$form['account_status'],'legal_status'=>$form['legal_status'],'loan_type'=>$form['loan_type'],'last_hearing_stage'=>$form['last_hearing_stage']?:0);

@@ -107,8 +107,8 @@ class Model_Supplier extends Model_Table {
 
 		// new entry for tds
 		if($data['tds_amount'] > 0){
-			$tds_acct = $this->api->currentBranch['Code'].SP.BRANCH_TDS_ACCOUNT;
-
+			//$tds_acct = $this->api->currentBranch['Code'].SP.BRANCH_TDS_ACCOUNT;
+			$tds_acct = $this->api->currentBranch['Code'].SP.BRANCH_TDS_ACCOUNT_SUPPLIER;
 			$account_cr = $this->add('Model_Account')->addCondition('AccountNumber',$tds_acct)->tryLoadAny();
 			$account_dr = $this->add('Model_Account')->load($data['cr']['account_id']);
 

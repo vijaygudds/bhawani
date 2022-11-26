@@ -19,7 +19,8 @@ class page_reports_deposit_fdinterestprovision extends Page {
 		$transaction_row_model=$this->add('Model_TransactionRow');
 		$transaction_join = $transaction_row_model->join('transactions','transaction_id');
 		$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
-		$ref_account_join = $transaction_row_model->join('accounts','reference_id');
+		//$ref_account_join = $transaction_row_model->join('accounts','reference_id');
+		$ref_account_join = $transaction_join->join('accounts','reference_id');
 		$ref_account_scheme_join = $ref_account_join->join('schemes','scheme_id');
 
 		$transaction_type_join->addField('transaction_name','name');
@@ -52,7 +53,7 @@ class page_reports_deposit_fdinterestprovision extends Page {
 		$transaction_row_model->setOrder('created_at','desc');
 
 		$grid->setModel($transaction_row_model,array('AccountNumber','scheme_name','Amount','amountCr','created_at'));
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 		// $grid->addFormatter('voucher_no','voucherNo');
 		// $grid->removeColumn('voucherNo');
 		$grid->addSno();

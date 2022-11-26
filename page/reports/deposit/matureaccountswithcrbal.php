@@ -71,7 +71,7 @@ class page_reports_deposit_matureaccountswithcrbal extends Page {
 		$grid = $this->add('Grid_AccountsBase');
 		$grid->setModel($account_model,array('member_detail','AccountNumber','phone_no','SchemeType','has_balance','maturity_date','agent','agent_phone','ActiveStatus'));
 		$grid->addSno();
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 		$grid->addFormatter('agent','wrap');
 
 		if($form->isSubmitted()){

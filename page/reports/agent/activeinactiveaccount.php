@@ -36,6 +36,16 @@ class page_reports_agent_activeinactiveaccount extends Page {
 			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
 		});
 
+		$rd_account_model->addExpression('last_transaction_date')->set(function($m,$q){
+				return $this->add('Model_TransactionRow',['table_alias'=>'last_cr_tr_date'])
+							->addCondition('account_id',$q->getField('id'))
+							->addCondition('amountCr','>',0)
+							->addCondition('transaction_type','in',[TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT/*, TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT*/])
+							->setLimit(1)
+							->setOrder('created_at','desc')
+							->fieldQuery('created_at');
+			})->type('date');
+
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 
@@ -60,7 +70,7 @@ class page_reports_agent_activeinactiveaccount extends Page {
 			$rd_account_model->addCondition('id',-1);
 		}
 		
-		$rd_grid->setModel($rd_account_model,array('sno','AccountNumber','created_at','maturity_date','name','FatherName','address','phone_no','Amount','agent','ActiveStatus'));
+		$rd_grid->setModel($rd_account_model,array('sno','AccountNumber','created_at','maturity_date','last_transaction_date','name','FatherName','address','phone_no','Amount','agent','ActiveStatus'));
 
 		$paginator = $rd_grid->addPaginator(500);
 		$rd_grid->skip_var = $paginator->skip_var;
@@ -192,3 +202,4 @@ class page_reports_agent_activeinactiveaccount extends Page {
 		}	
 	}
 }		
+

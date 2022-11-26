@@ -62,6 +62,16 @@ class page_reports_deposit_ddsduelist extends Page {
 		$account_agent = $account_model->refSQL('agent_id');
 
 
+		$account_model->addExpression('last_transaction_date')->set(function($m,$q){
+				return $this->add('Model_TransactionRow',['table_alias'=>'last_cr_tr_date'])
+							->addCondition('account_id',$q->getField('id'))
+							->addCondition('amountCr','>',0)
+							->addCondition('transaction_type','in',[/*TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT,*/ TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT])
+							->setLimit(1)
+							->setOrder('created_at','desc')
+							->fieldQuery('created_at');
+			})->type('date');
+
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			// ALREADY IMPLEMENTED IN EXPRESSIONS
@@ -80,7 +90,7 @@ class page_reports_deposit_ddsduelist extends Page {
 
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
-		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','Amount','total_deposit','total_due_till_date','due_amount','agent','agent_phone','scheme','dds_type'));
+		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','last_transaction_date','member_name','FatherName','CurrentAddress','landmark','PhoneNos','Amount','total_deposit','total_due_till_date','due_amount','agent','agent_phone','scheme','dds_type'));
 		$grid->addFormatter('CurrentAddress','Wrap');
 		if($_GET['agent']){
 			$grid->removeColumn('agent_code');

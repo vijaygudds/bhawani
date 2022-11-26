@@ -16,7 +16,7 @@ class page_duesms extends \Page{
 
 		set_time_limit(0);
 		
-		$before_days = [0,5];
+		$before_days = [0,3];
 		$date=[];
 
 		foreach ($before_days as $bd) {
@@ -32,7 +32,8 @@ class page_duesms extends \Page{
 		$mem_j->addField('PhoneNos');
 
 		$premium->addExpression('msg',function($m,$q){
-			return $q->expr('CONCAT("Dear Member, Your premium of INR ",[0]," is due on dated ",DATE_FORMAT([1],"%d-%m-%Y")," for account ",[2],", Please pay on time to avoid penalties. From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814)',
+			//return $q->expr('CONCAT("Dear Member, Your premium of INR ",[0]," is due on dated ",DATE_FORMAT([1],"%d-%m-%Y")," for account ",[2],", Please pay on time to avoid penalties. From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814)',
+			return $q->expr('CONCAT("Dear Member, Your premium of INR ",[0]," is due on dated ",DATE_FORMAT([1],"%d-%m-%Y")," for account ",[2],", Please pay on time to avoid penalties. From:- Bhawani Credit Co-Operative Society Ltd. +91 9509619500")',
 				[
 					$q->getField('Amount'),
 					$m->getElement('DueDate'),
@@ -56,9 +57,11 @@ class page_duesms extends \Page{
 			$no = $no[0];
 			$no = explode("/", $no);
 			$no = $no[0];
-			$return = $cont->sendMessage($no,$p['msg'],"1007754144578582143");
+			//$return = $cont->sendMessage($no,$p['msg'],"1007754144578582143");
+			$return = $cont->sendMessage($no,$p['msg'],"1007330999452649033");
 			echo $no.' '. $p['msg']. '<br/>'.$return.'<hr/>';
 			if($_GET['test']) break;
+		//exit;
 		}
 
 	}

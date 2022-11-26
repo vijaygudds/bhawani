@@ -62,6 +62,15 @@ class page_reports_deposit_emiduelist extends Page {
 		$account_model->addExpression('last_premium')->set(function($m,$q){
 			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('DueDate');
 		});
+		$account_model->addExpression('last_transaction_date')->set(function($m,$q){
+				return $this->add('Model_TransactionRow',['table_alias'=>'last_cr_tr_date'])
+							->addCondition('account_id',$q->getField('id'))
+							->addCondition('amountCr','>',0)
+							->addCondition('transaction_type','in',[TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT/*, TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT*/])
+							->setLimit(1)
+							->setOrder('created_at','desc')
+							->fieldQuery('created_at');
+			})->type('date');
 
 		$account_model->addExpression('premium_amount')->set(function($m,$q){
 			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('Amount');
@@ -130,7 +139,7 @@ class page_reports_deposit_emiduelist extends Page {
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
-		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','agent','agent_code','agent_phone','scheme'));
+		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','last_transaction_date','agent','agent_code','agent_phone','scheme'));
 		$grid->addFormatter('CurrentAddress','Wrap');
 		if($_GET['agent']){
 			$grid->removeColumn('agent_code');

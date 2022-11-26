@@ -47,6 +47,7 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 define('SP',							' ');
 define('SAVING_ACCOUNT_SCHEME',			'Saving Account');
 define('BRANCH_TDS_ACCOUNT',                    'TDS');
+define('BRANCH_TDS_ACCOUNT_SUPPLIER',                    'TDS SUPPLIER');
 define('LIABILITIES_HEAD',				'Liabilities');
 define('CASH_ACCOUNT_SCHEME',           'Cash Account');
 define('ASSETS_HEAD',                   'Assets');

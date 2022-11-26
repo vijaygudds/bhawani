@@ -101,7 +101,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$tr_model->add('Controller_Acl');
 		$grid->setModel($tr_model,$fields_array);
 			
-		$grid->addPaginator(10);
+		$grid->addPaginator(5000);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(

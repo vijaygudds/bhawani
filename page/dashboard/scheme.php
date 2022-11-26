@@ -35,7 +35,7 @@ class page_dashboard_scheme extends Page {
 			$grid=$loan->add('Grid_Scheme');
 			$scheme_Loan_model =$loan->add('Model_Scheme_Loan');
 			$scheme_Loan_model->setOrder('id','desc');
-			$grid->setModel($scheme_Loan_model,array('type','name','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet','balance_sheet_id','ProcessingFees','ProcessingFeesinPercent','SchemeGroup','MinLimit','MaxLimit','total_accounts','total_active_accounts','valid_till'));
+			$grid->setModel($scheme_Loan_model,array('type','name','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet','balance_sheet_id','ProcessingFees','ProcessingFeesinPercent','SchemeGroup','MinLimit','MaxLimit','total_accounts','total_active_accounts','valid_till','panelty','panelty_grace'));
 		
 		$rec=$tab->addTab('Recurring');
 			$grid=$rec->add('Grid_Scheme');

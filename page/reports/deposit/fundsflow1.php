@@ -1,4 +1,4 @@
-<?php class page_reports_deposit_fundsflow extends Page {
+<?php class page_reports_deposit_fundsflow1 extends Page {
 	public $title="Funds Flow Report";
 	function init(){
 		parent::init();
@@ -10,28 +10,19 @@
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
-		$account_type_array=array('%'=>'All','SM'=>'SM','DDS'=>'DDS','FixedAndMis'=>'Fixed And Mis','Recurring'=>'Recurring','SavingAndCurrent'=>'Saving And Current');
+		$account_type_array=array('%'=>'All','DDS'=>'DDS','FixedAndMis'=>'Fixed And Mis','Recurring'=>'Recurring','SavingAndCurrent'=>'Saving And Current');
 		$form->addField('dropdown','account_type')->setValueList($account_type_array);
 		$form->addSubmit('GET List');
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->add('H3',null,'grid_buttons')->set('Funds Flow Report From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 		$account_model = $this->add('Model_Account');
 		$account_model->addExpression('sum_debit')->set(function($m,$q){
-			$tr_dr = $m->add('Model_TransactionRow')
+			return $m->add('Model_TransactionRow')
 					->addCondition('account_id',$q->getField('id'))
 					->addCondition('created_at','>=',$_GET['from_date'])
-					->addCondition('created_at','<',$this->app->nextDate($_GET['to_date']));
-			if($this->api->stickyGET("account_type") === 'FixedAndMis'){
-				$tr_dr->addCondition('transaction_type',[TRA_DDS_ACCOUNT_AMOUNT_WITHDRAWL,TRA_FD_ACCOUNT_AMOUNT_WITHDRAWL,
-					TRA_FIXED_ACCOUNT_DEPOSIT,
-					TRA_RECURRING_ACCOUNT_AMOUNT_WITHDRAWL,
-					TRA_SAVING_ACCOUNT_AMOUNT_WITHDRAWL]);
-			}else{
-				$tr_dr->addCondition('transaction_type',[TRA_DDS_ACCOUNT_AMOUNT_WITHDRAWL,TRA_FD_ACCOUNT_AMOUNT_WITHDRAWL,
-					TRA_RECURRING_ACCOUNT_AMOUNT_WITHDRAWL,
-					TRA_SAVING_ACCOUNT_AMOUNT_WITHDRAWL]);
-			}
-			return $tr_dr->sum('amountDr');
+					->addCondition('created_at','<',$this->app->nextDate($_GET['to_date']))
+					->addCondition('transaction_type',[TRA_DDS_ACCOUNT_AMOUNT_WITHDRAWL,TRA_FD_ACCOUNT_AMOUNT_WITHDRAWL,TRA_RECURRING_ACCOUNT_AMOUNT_WITHDRAWL,TRA_SAVING_ACCOUNT_AMOUNT_WITHDRAWL])
+					->sum('amountDr');
 		})->caption('Out Flow');
 		$account_model->addExpression('sum_credit')->set(function($m,$q){
 			return $m->add('Model_TransactionRow')

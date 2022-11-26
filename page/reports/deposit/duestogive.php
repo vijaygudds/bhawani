@@ -43,12 +43,13 @@ class page_reports_deposit_duestogive extends Page {
 
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->add('H3',null,'grid_buttons')->set('Dues To Give Report From ' . $_GET['from_date']. ' to ' . $till_date );
-
+		
 		$account=$this->add('Model_Account');
 		$member_join=$account->join('members','member_id');
 		$member_join->addField('member_name','name');
 		$member_join->addField('FatherName');
 		$member_join->addField('PhoneNos');
+		$member_join->addField('AdharNumber');
 		$member_join->addField('PermanentAddress');
 		
 		$agent_join=$account->leftJoin('agents','agent_id');
@@ -83,7 +84,7 @@ class page_reports_deposit_duestogive extends Page {
 		$account->addExpression('agent_mo_id')->set($account->refSQL('agent_id')->fieldQuery('mo_id'));
 		$account->addExpression('agent_mo_name')->set($account->refSQL('agent_id')->fieldQuery('mo'))->caption('Mo');
 
-		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type');
+		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','AdharNumber','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type');
 
 
 		if($_GET['filter']){			

@@ -428,7 +428,7 @@ class Model_Account extends Model_Table {
 
 	function creditWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null,$on_date=null){
 		if(!$on_date) $on_date = $this->app->now;
-
+		//throw new \Exception($this['scheme_id']);
 		$transaction_row=$this->add('Model_TransactionRow');
 		$transaction_row['amountCr']=$amount;
 		$transaction_row['side']='CR';
