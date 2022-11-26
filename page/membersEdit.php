@@ -170,7 +170,7 @@ class page_membersEdit extends Page {
 		$form_fields=null;
 
 		if($crud->isEditing()){
-			$form_fields=['PhoneNos','PanNo','AdharNumber','gstin','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2'];
+			$form_fields=['title','gender','PhoneNos','PanNo','AdharNumber','gstin','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','landmark','tehsil','district','city','pin_code','state','PermanentAddress'];
 		}
 		
 		if($crud->isEditing('edit')){
