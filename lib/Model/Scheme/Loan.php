@@ -102,6 +102,9 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$this->api->markProgress('Updating_Penalties',null);
 		
 		$loan_accounts  = $this->add('Model_Active_Account_Loan');
+		$loan_accounts->addCondition('is_in_arbitration',false);
+		$loan_accounts->addCondition('is_given_for_legal_process',false);
+		$loan_accounts->addCondition('is_in_legal',false);
 		$q= $loan_accounts->dsql();
 		
 		$dealer_join = $loan_accounts->leftJoin('dealers','dealer_id');
