@@ -418,6 +418,11 @@ class page_reports_loan_emiduelist extends Page {
 						$account_model->addCondition('bike_surrendered',false);
 						// $account_model->addCondition('is_given_for_legal_process',true);
 					break;
+					case ['include', 'exclude']:
+						$account_model->addCondition('is_bike_returned',true);
+						// $account_model->addCondition('bike_surrendered',false);
+						$account_model->addCondition('is_given_for_legal_process',false);
+					break;
 					case ['exclude', 'only']:
 						$account_model->addCondition('is_given_for_legal_process',true);
 						// $account_model->addCondition('bike_surrendered',false);
