@@ -250,32 +250,74 @@ class page_reports_loan_dealerwise extends Page {
 				$account_model->addCondition('dsa_id',$_GET['dsa']);
 				if(!$_GET['dealer']) $grid_column_array[] ='dealer';
 			}
+			$bike_surreendered = $this->app->stickyGET('bike_surrendered');
+				$legal_account = $this->app->stickyGET('legal_accounts');
+				switch ([$bike_surreendered, $legal_account]) {
+					case ['only', 'only']:
+						throw new \Exception("Please Select Only One Case In Only", 1);
+					break;
+					case ['only', 'exclude']:
+						$account_model->addCondition('bike_surrendered',true);
+						$account_model->addCondition('is_bike_returned',false);
+						// $account_model->addCondition('is_given_for_legal_process',false);
+					break;
+					case ['only', 'include']:
+						$account_model->addCondition('bike_surrendered',true);
+						// $account_model->addCondition('is_bike_returned',false);	
+					break;
+					case ['exclude', 'include']:
+						$account_model->addCondition($account_model->dsql()->orExpr()->where('is_bike_returned',true)->where('bike_surrendered','false'));
+						// $account_model->addCondition('is_given_for_legal_process',true);
+					break;
+					case ['include', 'exclude']:
+						// $account_model->addCondition('is_bike_returned',true);
+						// $account_model->addCondition('bike_surrendered',false);
+						$account_model->addCondition('is_given_for_legal_process',false);
+					break;
+					case ['exclude', 'only']:
+						$account_model->addCondition('is_given_for_legal_process',true);
+						// $account_model->addCondition('bike_surrendered',false);
+						// $account_model->addCondition('is_bike_returned',true);
 
-			switch ($_GET['bike_surrendered']) {
-				case 'only':
-					$account_model->addCondition('bike_surrendered',true);
 					break;
-				case 'exclude':
-					$account_model->addCondition('bike_surrendered',true);
-					$account_model->addCondition('is_bike_returned',false);
-					$account_model->addCondition('is_given_for_legal_process',false);
+					case ['include', 'only']:
+						// $account_model->addCondition('bike_surrendered',false);
+						// $account_model->addCondition('is_bike_returned',true);
+						$account_model->addCondition('is_given_for_legal_process',true);
 					break;
-				case 'include':
-				default:
+					case ['exclude', 'exclude']:
+						// $account_model->addCondition('bike_surrendered',false);
+					$account_model->addCondition($account_model->dsql()->orExpr()->where('is_bike_returned',true)->where('bike_surrendered','false'));
+						$account_model->addCondition('is_given_for_legal_process',false);	
 					break;
-			}
+					case ['include', 'include']:
+					break;
+				}
+			// switch ($_GET['bike_surrendered']) {
+			// 	case 'only':
+			// 		$account_model->addCondition('bike_surrendered',true);
+			// 		break;
+			// 	case 'exclude':
+			// 		$account_model->addCondition('bike_surrendered',true);
+			// 		$account_model->addCondition('is_bike_returned',false);
+			// 		$account_model->addCondition('is_given_for_legal_process',false);
+			// 		break;
+			// 	case 'include':
+			// 	default:
+			// 		break;
+			// }
 
-			switch ($_GET['legal_accounts']) {
-				case 'only':
-					$account_model->addCondition('is_given_for_legal_process',true);
-					break;
-				case 'exclude':
-					$account_model->addCondition('is_given_for_legal_process',false);
-					break;
-				case 'include':
-				default:
-					break;
-			}
+			// switch ($_GET['legal_accounts']) {
+			// 	case 'only':
+			// 		$account_model->addCondition('is_given_for_legal_process',true);
+			// 		break;
+			// 	case 'exclude':
+			// 		$account_model->addCondition('is_given_for_legal_process',false);
+			// 		break;
+			// 	case 'include':
+			// 	default:
+			// 		break;
+			// }
 
 			// $grid->addMethod('format_total',function($g,$f){
 			// 	$temp  = $g->current_row_html[$f]= ($g->model['due_premium_count'] * $g->model['emi_amount']) +$g->model['due_panelty']+$g->model['other_charges'];
