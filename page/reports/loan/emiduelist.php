@@ -398,43 +398,79 @@ class page_reports_loan_emiduelist extends Page {
 					$account_model->addCondition('dsa_id',$_GET['dsa']);
 					if(!$_GET['dealer']) $grid_column_array[] ='dealer';
 				}
-
-				switch ($_GET['bike_surrendered	']) {
-
-					case 'only':
+				$bike_surreendered = $this->app->stickyGET('bike_surrendered');
+				$legal_account = $this->app->stickyGET('legal_accounts');
+				switch ([$bike_surreendered, $legal_account]) {
+					case ['only', 'only']:
+						throw new \Exception("Please Select Only One Case In Only", 1);
+					break;
+					case ['only', 'exclude']:
 						$account_model->addCondition('bike_surrendered',true);
-						$account_model->addCondition('bike_surrendered','<>',null);
 						$account_model->addCondition('is_bike_returned',false);
-						
-						break;
-					case 'exclude':
+						// $account_model->addCondition('is_given_for_legal_process',false);
+					break;
+					case ['only', 'include']:
+						$account_model->addCondition('bike_surrendered',true);
+						// $account_model->addCondition('is_bike_returned',false);	
+					break;
+					case ['exclude', 'include']:
+						$account_model->addCondition('is_bike_returned',true);
+						$account_model->addCondition('bike_surrendered',false);
+						// $account_model->addCondition('is_given_for_legal_process',true);
+					break;
+					case ['exclude', 'only']:
+						$account_model->addCondition('is_given_for_legal_process',true);
+						// $account_model->addCondition('bike_surrendered',false);
+						// $account_model->addCondition('is_bike_returned',true);
+
+					break;
+					case ['include', 'only']:
+						// $account_model->addCondition('bike_surrendered',false);
+						// $account_model->addCondition('is_bike_returned',true);
+						$account_model->addCondition('is_given_for_legal_process',true);
+					break;
+					case ['exclude', 'exclude']:
 						$account_model->addCondition('bike_surrendered',false);
 						$account_model->addCondition('is_bike_returned',true);
-						$account_model->addCondition('is_bike_returned','<>',null);
-						// $account_model->addCondition('is_given_for_legal_process',false);
-						break;
-					case 'include':
-					default:
-						break;
+						$account_model->addCondition('is_given_for_legal_process',false);	
+					break;
+					case ['include', 'include']:
+					break;
 				}
 
-				switch ($_GET['legal_accounts']) {
-					case 'only':
-						$account_model->addCondition('is_given_for_legal_process',true);
-						$account_model->addCondition('is_given_for_legal_process','<>',null);
-						break;
-					case 'exclude':
-						$account_model->addCondition('is_given_for_legal_process',false);
-						break;
-					case 'include':
-					default:
-						break;
-				}
+				// switch ($_GET['bike_surrendered']) {
 
-				if($_GET['bike_surrendered'] === "only" AND $_GET['legal_accounts'] === "only"){
-					throw new \Exception("Please Select Only One Case", 1);
+				// 	case 'only':
+				// 		$account_model->addCondition('bike_surrendered',true);
+				// 		$account_model->addCondition('is_bike_returned',false);
+						
+				// 		break;
+				// 	case 'exclude':
+				// 		$account_model->addCondition('bike_surrendered',false);
+				// 		$account_model->addCondition('is_bike_returned',true);
+				// 		// $account_model->addCondition('is_given_for_legal_process',false);
+				// 		break;
+				// 	case 'include':
+				// 	default:
+				// 		break;
+				// }
+
+				// switch ($_GET['legal_accounts']) {
+				// 	case 'only':
+				// 		$account_model->addCondition('is_given_for_legal_process',true);
+				// 		break;
+				// 	case 'exclude':
+				// 		$account_model->addCondition('is_given_for_legal_process',false);
+				// 		break;
+				// 	case 'include':
+				// 	default:
+				// 		break;
+				// }
+
+				// if($_GET['bike_surrendered'] === "only" AND $_GET['legal_accounts'] === "only"){
+				// 	throw new \Exception("Please Select Only One Case", 1);
 					
-				}
+				// }
 
 
 				if($_GET['report_type'] == 'time_collapse' && $_GET['time_collapse_nonpaid_months']){
