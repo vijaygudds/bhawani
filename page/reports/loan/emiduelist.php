@@ -88,7 +88,7 @@ class page_reports_loan_emiduelist extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','last_transaction_date','Amount','due_date','scheme','current_balance','member_name','FatherName','CurrentAddress','landmark','tehsil','district','city','pin_code','state','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_father','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','received_panelty','remaning_panelty','other_charges','other_received','remaning_other_amount','gst_amount_dr','gst_amount_cr','gst_due','total','bike_surrendered_by','bike_surrendered_on','bike_returned_on','last_premium_date','interest_rate');
+		$grid_column_array = array('AccountNumber','current_ro','created_at','maturity_date','last_transaction_date','Amount','due_date','scheme','current_balance','member_name','FatherName','CurrentAddress','landmark','tehsil','district','city','pin_code','state','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_father','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','received_panelty','remaning_panelty','other_charges','other_received','remaning_other_amount','gst_amount_dr','gst_amount_cr','gst_due','total','bike_surrendered_by','bike_surrendered_on','bike_returned_on','last_premium_date','interest_rate');
 
 		// $account_model->addExpression('loan_remark',function($m,$q){
 
@@ -496,6 +496,14 @@ class page_reports_loan_emiduelist extends Page {
 
 			}
 			
+			$account_model->addExpression('current_ro',['table_alias'=>'ro_ass'])->set(function($m,$q){
+				return $ro_ass = $this->add('Model_MoAccountAssociation')
+							->addCondition('account_id',$q->getField('id'))
+							// ->addCondition('to_date','<=',$this->app->nextDate($this->app->today))
+							->setOrder('id','desc')
+							->setLimit(1)
+							->fieldQuery('mo');		
+			});
 
 			$account_model->addExpression('last_transaction_date')->set(function($m,$q){
 				return $this->add('Model_TransactionRow',['table_alias'=>'last_cr_tr_date'])
