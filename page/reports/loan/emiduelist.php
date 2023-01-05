@@ -499,11 +499,12 @@ class page_reports_loan_emiduelist extends Page {
 			$account_model->addExpression('current_ro',['table_alias'=>'ro_ass'])->set(function($m,$q){
 				return $ro_ass = $this->add('Model_MoAccountAssociation')
 							->addCondition('account_id',$q->getField('id'))
-							// ->addCondition('to_date','<=',$this->app->nextDate($this->app->today))
+							// ->addCondition('from_date','>=',$from_date)
+							->addCondition('_to_date',null)
 							->setOrder('id','desc')
 							->setLimit(1)
 							->fieldQuery('mo');		
-			});
+			})->sortable(true);
 
 			$account_model->addExpression('last_transaction_date')->set(function($m,$q){
 				return $this->add('Model_TransactionRow',['table_alias'=>'last_cr_tr_date'])
