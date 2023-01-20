@@ -605,7 +605,6 @@ class Model_Account extends Model_Table {
 				$this[$field] = $value;
 		}
 
-		
 
 		$this->save();
 		for($k=2;$k<=4;$k++) {
@@ -614,9 +613,25 @@ class Model_Account extends Model_Table {
 		    	$this->jointAccountMember($j_m_id);
 		    }
 		}
+		if($otherValues['new_or_renew'] == 'ReNew'){
+			
+			$old_acc = $this->add('Model_Account_FixedAndMis');
+			$old_acc->addCondition('AccountNumber',$otherValues['debit_account']);
+			$old_acc->tryLoadAny();
+			if($old_acc->loaded()){
+				$joint_members = $this->add('Model_JointMember')->addCondition('account_id',$old_acc->id);
+				if($joint_members->count()->getOne() > 0){
+					foreach($joint_members as $jm){
+						// echo "string". $jm['member_id'];
+						$this->jointAccountMember($jm['member_id']);
+					}
+				}
+
+			}
+		}
+
 		// var_dump($otherValues);
 		// throw new \Exception("Error Processing Request", 1);
-
 		return $this->id;
 	}
 
