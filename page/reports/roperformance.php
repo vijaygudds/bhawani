@@ -27,6 +27,10 @@ class page_reports_roperformance extends Page {
 
 		if($filter){
 
+			$model->addExpression('bike_surrendered_on')->set(function($m,$q){
+				return $m->refSQL('account_id')->fieldQuery('bike_surrendered_on');
+			});
+
 			$model->addExpression('effective_from')->set(function($m,$q)use($from_date){
 				return $q->expr('GREATEST([0],"[1]")',[$m->getElement('from_date'),$from_date]);
 			})->type('datetime');
