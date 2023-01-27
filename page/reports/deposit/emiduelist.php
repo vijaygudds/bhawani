@@ -139,7 +139,7 @@ class page_reports_deposit_emiduelist extends Page {
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
-		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','last_transaction_date','agent','agent_code','agent_phone','scheme'));
+		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','telecaller','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','last_transaction_date','agent','agent_code','agent_phone','scheme'));
 		$grid->addFormatter('CurrentAddress','Wrap');
 		if($_GET['agent']){
 			$grid->removeColumn('agent_code');
@@ -172,5 +172,53 @@ class page_reports_deposit_emiduelist extends Page {
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('agent'=>$form['agent'],'on_date'=>$form['on_date']?:0,'report_type'=>$form['report_type'],'mo'=>$form['mo'],'filter'=>1))->execute();
 		}	
+
+		// SECOND FORM FOR Telecaller LIST
+
+		$telecaller_change_form= $this->add('Form');
+		$telecaller_change_form->addField('DropDown','telecaller')->setEmptyText("Please Select")->validateNotNull()->setModel('TeleCaller')->addCondition('is_active',true);
+		$telecaller_change_form->addField('Checkbox','clear_telecaller','Clear above TeleCallers from existing accounts');
+		$tele_list_field = $telecaller_change_form->addField('Text','account_list');
+		$telecaller_change_form->addSubmit('GO');
+
+
+		$grid->addSelectable($tele_list_field);
+
+		if($telecaller_change_form->isSubmitted()){
+			$account_list = json_decode($telecaller_change_form['account_list'],true);
+
+			if(count($account_list)>0 && $telecaller_change_form['clear_telecaller']){
+				$telecaller_change_form->displayError('clear_telecaller','Do not select accounts to clear, all account containing above selected Telecallers will be removed');
+			}
+
+			if($telecaller_change_form['clear_telecaller'] && !$telecaller_change_form['telecaller']){
+				$telecaller_change_form->displayError('telecaller','Select TeleCaller that you want to remove first');
+			}
+
+			if(!$telecaller_change_form['clear_telecaller'] && !$telecaller_change_form['telecaller']){
+				$telecaller_change_form->displayError('telecaller','Select Telecaller that you want to remove first');
+			}
+
+			if($telecaller_change_form['clear_telecaller']){
+				$account_m = $this->add('Model_Account');
+				$account_m->addCondition('telecaller_id',$telecaller_change_form['telecaller']);
+				foreach ($account_m as $m) {
+					$m['telecaller_id']=null;
+					$m->saveAndUnload();
+				}
+			}
+
+			if(count($account_list)>0){	
+				foreach ($account_list as $acc) {
+					$account_m = $this->add('Model_Account');
+					$account_m->load($acc);
+					$account_m['telecaller_id']= $telecaller_change_form['telecaller'];
+					$account_m->save();	
+				}
+			}
+
+			$this->js(null,$this->app->js()->univ()->successMessage('Done'))->reload()->execute();
+
+		}
 	}
 }
