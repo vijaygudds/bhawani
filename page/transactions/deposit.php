@@ -217,7 +217,7 @@ class page_transactions_deposit extends Page {
 			$mobile_no=explode(',', $member['PhoneNos']);
 			if(strlen(trim($mobile_no[0])) == 10){
 				$sms=$this->add('Controller_Sms');
-				$sms->sendMessage($mobile_no[0],$msg,"1007554286874581610");
+				$sms->sendMessage($mobile_no[0],$msg,"1007739651839230196");
 			}
 					
 
