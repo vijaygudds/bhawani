@@ -212,7 +212,7 @@ class page_transactions_deposit extends Page {
 			}
 			$member=$account_model->ref('member_id');
 			//$msg="Dear Member, Your account ".$account_model['AccountNumber']." has been credited with amount ".$form['amount']." on ". $this->app->today. " From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
-			$msg="Dear Member, Your account ".$account_model['AccountNumber']." has been credited with amount ".$form['amount']." on ". $this->app->today. ".From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
+			$msg="Dear Member, Your account ".$account_model['AccountNumber']." has been credited with amount ".$form['amount']." on ". $this->app->today. ".From:- Bhawani Credit Co-Operative Society Ltd. +91 9509619500";
 
 			$mobile_no=explode(',', $member['PhoneNos']);
 			if(strlen(trim($mobile_no[0])) == 10){

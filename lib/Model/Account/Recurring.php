@@ -73,7 +73,7 @@ class Model_Account_Recurring extends Model_Account{
 
 			$member=$this->add('Model_Member')->load($member_id);
 			//$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ". $otherValues['initial_opening_amount'] . " on dated ". $this->app->today. " From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
-			$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ". $otherValues['initial_opening_amount'] . " on dated ".$this->app->today.". From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
+			$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ". $otherValues['initial_opening_amount'] . " on dated ".$this->app->today.". From:- Bhawani Credit Co-Operative Society Ltd. +91 9509619500";
 
 			$mobile_no=explode(',', $member['PhoneNos']);
 			if(strlen(trim($mobile_no[0])) == 10){

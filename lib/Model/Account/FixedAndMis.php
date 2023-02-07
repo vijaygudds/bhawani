@@ -73,12 +73,12 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$member=$this->add('Model_Member')->load($member_id);
 		//$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ".$this['Amount']." on dated ". $this->app->today. " From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
-		$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ".$this['Amount']." on dated ". $this->app->today. ". From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
+		$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ".$this['Amount']." on dated ". $this->app->today. ". From:- Bhawani Credit Co-Operative Society Ltd. +91 9509619500";
 
 		$mobile_no=explode(',', $member['PhoneNos']);
 		if(strlen(trim($mobile_no[0])) == 10){
 			$sms=$this->add('Controller_Sms');
-			$sms->sendMessage($mobile_no[0],$msg,"1007376618312406895");
+			$sms->sendMessage($mobile_no[0],$msg,"1007388204835476197");
 		}
 
 	}
