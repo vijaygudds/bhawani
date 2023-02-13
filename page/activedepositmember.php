@@ -99,6 +99,7 @@ class page_activedepositmember extends Page {
 			$member->addCondition('id',-1);
 		// $grid->addPaginator(1000);
 		$member->setOrder('created_at','desc');	
+		$grid->addQuickSearch(['member_name','sm_no']);	
 		$grid->setModel($member,
 								array('member_name',
 										'FatherName',
