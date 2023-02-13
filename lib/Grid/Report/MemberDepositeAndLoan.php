@@ -6,7 +6,7 @@ class Grid_Report_MemberDepositeAndLoan extends Grid_AccountsBase{
 	function setModel($model,$fields=null){
 		parent::setModel($model,$fields);
 		//Code
-		$this->addColumn('share_account_amount');
+		// $this->addColumn('share_account_amount');
 		$this->addFormatter('member_name','Wrap');
 
 		$this->addColumn('deposite_amount');
