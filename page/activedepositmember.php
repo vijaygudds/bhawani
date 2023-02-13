@@ -18,8 +18,8 @@ class page_activedepositmember extends Page {
 		$account_type=$form->addField('DropDown','status')->setValueList(array(1=>'Active',0=>'Inactive'));
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid_Report_MemberDepositeAndLoan',array('as_on_date'=>$as_on_date));
-		// $grid=$this->add('Grid');
+		// $grid=$this->add('Grid_Report_MemberDepositeAndLoan',array('as_on_date'=>$as_on_date));
+		$grid=$this->add('Grid');
 		
 		$grid->add('H3',null,'grid_buttons')->set('Member Deposite and Loan Report As On '. date('d-M-Y',strtotime($as_on_date)));
 
@@ -33,7 +33,7 @@ class page_activedepositmember extends Page {
 
 				return $m->add('Model_Account')
 					->addCondition('member_id',$q->getField('id'))
-					->addCondition('account_type',[ACCOUNT_TYPE_FIXED,ACCOUNT_TYPE_DDS,ACCOUNT_TYPE_RECURRING])
+					->addCondition('account_type',['FD','DDS','Recurring'])
 					->addCondition('ActiveStatus',true)
 					->_dsql()->del('fields')
 					->field('GROUP_CONCAT(AccountNumber)');
@@ -97,7 +97,7 @@ class page_activedepositmember extends Page {
 			
 		}else
 			$member->addCondition('id',-1);
-		// $grid->addPaginator(1000);
+		$grid->addPaginator(1000);
 		$member->setOrder('created_at','desc');	
 		$grid->addQuickSearch(['member_name','sm_no']);	
 		$grid->setModel($member,
