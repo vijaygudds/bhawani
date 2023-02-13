@@ -18,8 +18,8 @@ class page_activedepositmember extends Page {
 		$account_type=$form->addField('DropDown','status')->setValueList(array(1=>'Active',0=>'Inactive'));
 		$form->addSubmit('GET List');
 
-		// $grid=$this->add('Grid_Report_MemberDepositeAndLoan',array('as_on_date'=>$as_on_date));
-		$grid=$this->add('Grid');
+		$grid=$this->add('Grid_Report_MemberDepositeAndLoan',array('as_on_date'=>$as_on_date));
+		// $grid=$this->add('Grid');
 		
 		$grid->add('H3',null,'grid_buttons')->set('Member Deposite and Loan Report As On '. date('d-M-Y',strtotime($as_on_date)));
 
