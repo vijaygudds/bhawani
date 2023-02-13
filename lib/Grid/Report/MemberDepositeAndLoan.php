@@ -21,7 +21,7 @@ class Grid_Report_MemberDepositeAndLoan extends Grid_AccountsBase{
 		$paginator = $this->addPaginator(1000);
 		$this->skip_var = $paginator->skip_var;
 
-		$this->addOrder()->move('share_account_amount','after','sm_no')->now();
+		// $this->addOrder()->move('share_account_amount','after','sm_no')->now();
 	}
 
 	function format_deposite_amount($field){

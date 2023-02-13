@@ -73,9 +73,9 @@ class page_activedepositmember extends Page {
 			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('CurrentBalanceDr');
 		});
 
-		// $member->addExpression('share_account_amount')->set(function($m,$q){
-		// 	return $q->expr('[0]-[1]',array($m->getElement('share_cr'),$m->getElement('share_dr')));
-		// });
+		$member->addExpression('share_account_amount')->set(function($m,$q){
+			return $q->expr('[0]-[1]',array($m->getElement('share_cr'),$m->getElement('share_dr')));
+		});
 
 
 		// $member->addCondition('sm_count','>',0);
