@@ -64,7 +64,7 @@ function init(){
 		$order->move('s_no', 'first')->now();
 		$paginator = $grid->addPaginator(1000);
 		
-		if($account_model->count()->getOne() < 0){
+		if($account_model->count()->getOne() > 0){
 
 		$btn = $grid->addButton('MarkInactive');
 		if($btn->isClicked()){
