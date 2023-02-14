@@ -53,6 +53,16 @@ class page_reports_member_nonactiveaccount extends Page {
 				->_dsql()->del('fields')
 				->field('GROUP_CONCAT(AccountNumber)');
 		});
+		$this->member->addExpression('share_cr')->set(function($m,$q){
+			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('CurrentBalanceCr');
+		});
+		$this->member->addExpression('share_dr')->set(function($m,$q){
+			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('CurrentBalanceDr');
+		});
+
+		$this->member->addExpression('share_account_amount')->set(function($m,$q){
+			return $q->expr('[0]-[1]',array($m->getElement('share_cr'),$m->getElement('share_dr')));
+		});
 
 		$this->member->addExpression('non_active_accounts')->set(function($m,$q){
 			
@@ -73,7 +83,7 @@ class page_reports_member_nonactiveaccount extends Page {
 		$this->member->addCondition('sm_accounts','!=','');
 		//$this->member->addCondition('non_active_accounts','!=','');
 		$this->member->addCondition('sb_disactive','<','1');
-		$this->grid->setModel($this->member,['member_no','sm_accounts','saving_and_current_accounts','non_active_accounts','name','PhoneNos','PermanentAddress']);
+		$this->grid->setModel($this->member,['member_no','sm_accounts','share_account_amount','saving_and_current_accounts','non_active_accounts','name','PhoneNos','PermanentAddress']);
 	}
 
 
