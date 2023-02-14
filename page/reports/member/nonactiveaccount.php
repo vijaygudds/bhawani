@@ -83,7 +83,11 @@ class page_reports_member_nonactiveaccount extends Page {
 		$this->member->addCondition('sm_accounts','!=','');
 		//$this->member->addCondition('non_active_accounts','!=','');
 		$this->member->addCondition('sb_disactive','<','1');
+		
+
 		$this->grid->setModel($this->member,['member_no','sm_accounts','share_account_amount','saving_and_current_accounts','non_active_accounts','name','PhoneNos','PermanentAddress']);
+		$this->grid->addTotals(array('share_account_amount'));
+		
 	}
 
 
