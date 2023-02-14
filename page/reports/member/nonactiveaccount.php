@@ -54,10 +54,10 @@ class page_reports_member_nonactiveaccount extends Page {
 				->field('GROUP_CONCAT(AccountNumber)');
 		});
 		$this->member->addExpression('share_cr')->set(function($m,$q){
-			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('CurrentBalanceCr');
+			return $m->refSQL('Account')->addCondition('ActiveStatus',true)->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('CurrentBalanceCr');
 		});
 		$this->member->addExpression('share_dr')->set(function($m,$q){
-			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('CurrentBalanceDr');
+			return $m->refSQL('Account')->addCondition('ActiveStatus',true)->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('CurrentBalanceDr');
 		});
 
 		$this->member->addExpression('share_account_amount')->set(function($m,$q){
