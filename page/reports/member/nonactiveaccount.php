@@ -61,7 +61,7 @@ class page_reports_member_nonactiveaccount extends Page {
 		});
 
 		$this->member->addExpression('share_account_amount')->set(function($m,$q){
-			return $q->expr('IFNULL([0],0)-IFNULL([1],0)',array($m->getElement('share_cr'),$m->getElement('share_dr')));
+			return $q->expr('IFNULL([0],0)- IFNULL([1],0)',array($m->getElement('share_cr'),$m->getElement('share_dr')));
 		})->sortable(true);
 
 		$this->member->addExpression('non_active_accounts')->set(function($m,$q){
@@ -85,7 +85,8 @@ class page_reports_member_nonactiveaccount extends Page {
 		$this->member->addCondition('sb_disactive','<','1');
 		
 
-		$this->grid->setModel($this->member,['member_no','sm_accounts','share_account_amount','saving_and_current_accounts','non_active_accounts','name','PhoneNos','PermanentAddress']);
+		$this->grid->setModel($this->member,['member_no','sm_accounts','share_cr','share_dr','share_account_amount','saving_and_current_accounts','non_active_accounts','name','PhoneNos','PermanentAddress']);
+		
 		$this->grid->addTotals(array('share_account_amount'));
 		
 	}
