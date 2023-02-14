@@ -55,7 +55,7 @@ function init(){
 		// $member_join->addField('PhoneNos');
 		// $member_join->addField('CurrentAddress');
 		// $member_join->addField('landmark');
-		
+
 		
 		$account_model->add('Controller_Acl');
 		$grid->setModel($account_model,array('member_name','scheme','ActiveStatus','created_at','Amount','AccountNumber','CurrentBalanceDr','CurrentBalanceCr','balance'));
@@ -63,5 +63,44 @@ function init(){
 		$order =$grid->addOrder();
 		$order->move('s_no', 'first')->now();
 		$paginator = $grid->addPaginator(1000);
+		
+		if($account_model->count()->getOne() < 0){
+
+		$btn = $grid->addButton('MarkInactive');
+		if($btn->isClicked()){
+			$sql_query= [];	
+				set_time_limit(30000000);
+				foreach ($account_model as $model) {
+					$sql_query[]= 'update accounts set ActiveStatus = 0 where id='.$model->id.' ;'; 
+					
+					// if(count($sql_query) >= 500){
+					// 	$q = implode(" ",$sql_query);
+					// 	// print_r($q);
+					// 	// exit;
+					// 	$this->api->db->dsql()->expr($q)->execute();
+					// 	$sql_query = [];
+					// 	$v= $this->add('View_Console')->set("first Account no" . $model['AccountNumber']);
+					// }	
+
+					// $voucher ++ ;
+
+					// $this->add('View')->set($model['voucher_no']);	
+				}
+				if(count($sql_query) > 0){
+					$q = implode(" ",$sql_query);
+					$this->api->db->dsql()->expr($q)->execute();
+						// $v= $this->add('View')->set("Voucher no" . $voucher);
+				}
+
+		}
+
+
+			
+			// foreach ($account_model as $acc) {
+			// 	$acc['ActiveStatus'] = false;
+			// 	$acc->save();
+			// }
+			$grid->js(null, $grid->js()->reload())->univ()->successMessage("All Account`s Deactivated")->execute();
+		}
 	}
 }
