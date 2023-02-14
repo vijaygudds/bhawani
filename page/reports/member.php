@@ -18,7 +18,6 @@ class page_reports_member extends Page {
 		$tab1=$tabs->addTabURL('reports_member_audit','Member Audit Reports');
 		$tab1=$tabs->addTabURL('reports_member_bankdetails','Member Bank Details');
 		$tab1=$tabs->addTabURL('accountcrdr','Zero Balance Accounts');
-		$tab1=$tabs->addTabURL('accountcrdr','Zero Balance Accounts');
 		$tab1=$tabs->addTabURL('activedepositmember','Active Deposit Member');
 	}
 }
