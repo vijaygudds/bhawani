@@ -61,7 +61,7 @@ class page_reports_member_nonactiveaccount extends Page {
 		});
 
 		$this->member->addExpression('share_account_amount')->set(function($m,$q){
-			return $q->expr('[0]-[1]',array($m->getElement('share_cr'),$m->getElement('share_dr')));
+			return $q->expr('IFNULL([0],0)-IFNULL([1],0)',array($m->getElement('share_cr'),$m->getElement('share_dr')));
 		})->sortable(true);
 
 		$this->member->addExpression('non_active_accounts')->set(function($m,$q){
