@@ -11,7 +11,7 @@ class page_reports_member_nonactiveaccount extends Page {
 		});
 		$this->grid = $this->add('Grid');
 		$this->grid->addSno();
-		$this->grid->addPaginator(500);
+		$this->grid->addPaginator(5000);
 
 
 		$this->member->addExpression('saving_and_current_accounts')->set(function($m,$q){

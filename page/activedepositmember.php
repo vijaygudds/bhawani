@@ -28,7 +28,7 @@ class page_activedepositmember extends Page {
 			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('AccountNumber');
 		});
 
-		$member->addExpression('non_active_accounts')->set(function($m,$q){
+		$member->addExpression('deposit_active_accounts')->set(function($m,$q){
 			
 
 				return $m->add('Model_Account')
@@ -84,7 +84,7 @@ class page_activedepositmember extends Page {
 		// $member->addCondition('Loan_count','<',1);
 		$member->addCondition(
 				$member->dsql()->orExpr()
-					->where($member->getElement('non_active_accounts'),'<',1)
+					->where($member->getElement('deposit_active_accounts'),'<',1)
 					->where($member->getElement('Loan_count'),'<',1)
 			);
 
@@ -107,7 +107,7 @@ class page_activedepositmember extends Page {
 										'share_account_amount',
 										'add_fees',
 										'Loan_count',
-										'non_active_accounts',
+										'deposit_active_accounts',
 									)
 						);
 
