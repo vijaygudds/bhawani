@@ -81,6 +81,13 @@ class page_reports_telecallerperformance extends Page {
 			$model->addExpression('to_date_date')->set(function($m,$q){
 				return $q->expr('Date([0])',[$m->getElement('to_date')]);
 			});
+
+			$model->addExpression('account_opening_date')->set(function($m,$q){
+				return $m->refSQL('account_id')->fieldQuery('created_at');
+			});
+			$model->addExpression('transaction_date')->set(function($m,$q){
+				return $this->add('Model_Transaction')->addCondition('reference_id',$q->getField('account_id'))->setOrder('id','desc')->setLimit(1)->fieldQuery('created_at');
+			});
 			
 			$model->addCondition('telecaller_id',$telecaller_id);
 			$model->addCondition('from_date','<',$this->app->nextDate($to_date));
