@@ -86,7 +86,29 @@ class page_reports_telecallerperformance extends Page {
 				return $m->refSQL('account_id')->fieldQuery('created_at');
 			});
 			$model->addExpression('transaction_date')->set(function($m,$q){
-				return $this->add('Model_Transaction')->addCondition('reference_id',$q->getField('account_id'))->setOrder('id','desc')->setLimit(1)->fieldQuery('created_at');
+				return $this->add('Model_Transaction')
+				->addCondition('reference_id',$q->getField('account_id'))
+				->addCondition('transaction_type',[
+							'NACH Registration Fees Charge Received',
+							'NACH Transaction File Canceling Charge Received',
+							'Society Notice Charge Received',
+							'Visit Charge',
+							'Legal Notice Charge Received',
+							'Vechicle Godown Rent Received',
+							'Legal Notice Sent For Bike Auction Charge Received',
+							'Final Recovery Notice Charge Received',
+							'Cheque Return Charge Received',
+							'Cheque Return Notice Charge Received',
+							'LEGAL CASE CHARGE RECEIVED',
+							'NOC Handling Charge', //DR to cash account and Cr to NOC handeling
+							'Insurance Processing Fees',
+							'File Cancel Charge Received',
+							'PRINTING & STATIONERY Charge Received',
+							'GST OTHER CHARGE RECEIVED',
+							'PenaltyAmountReceived',
+							'LoanAccountAmountDeposit'
+								])
+				->setOrder('id','desc')->setLimit(1)->fieldQuery('created_at');
 			});
 			
 			$model->addCondition('telecaller_id',$telecaller_id);
