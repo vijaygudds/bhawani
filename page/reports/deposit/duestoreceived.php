@@ -9,7 +9,9 @@ class page_reports_deposit_duestoreceived extends Page {
 		
 		$form=$this->add('Form');
 		$field_mo = $form->addField('autocomplete/Basic','mo');
+		$field_agent = $form->addField('autocomplete/Basic','agent');
 		$field_mo->setModel('Mo');
+		$field_agent->setModel('Agent');
 		// $agent_field=$form->addField('autocomplete/Basic','agent');
 		// $agent_field->setModel('Agent');
 
@@ -90,10 +92,10 @@ class page_reports_deposit_duestoreceived extends Page {
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			// ALREADY IMPLEMENTED IN EXPRESSIONS
-			// if($_GET['agent']){
-			// 	$this->api->stickyGET('agent');
-			// 	$account_model->addCondition('agent_id',$_GET['agent']);
-			// }
+			if($_GET['agent']){
+				$this->api->stickyGET('agent');
+				$account_model->addCondition('agent_id',$_GET['agent']);
+			}
 
 			// $this->api->stickyGET('report_type');
 			$this->api->stickyGET('from_date');
