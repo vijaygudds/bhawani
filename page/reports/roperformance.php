@@ -144,7 +144,7 @@ class page_reports_roperformance extends Page {
 		}
 
 		$grid = $this->add('Grid_AccountsBase');
-		$grid->setModel($model->debug());
+		$grid->setModel($model);
 		$grid->addSno();
 		$grid->addTotals(['loan_amount_deposit','penalty_amount_deposit','other_amount_deposit']);
 
