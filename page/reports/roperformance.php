@@ -139,14 +139,12 @@ class page_reports_roperformance extends Page {
 				return $this->add('Model_DocumentSubmitted')
 							->addCondition('accounts_id',$q->getField('account_id'))
 							->addCondition('documents',$dc)
-							->setOrder('id','desc')
-							->setLimit(1)
 							->fieldQuery('Description');
 			});
 		}
 
 		$grid = $this->add('Grid_AccountsBase');
-		$grid->setModel($model);
+		$grid->setModel($model->debug());
 		$grid->addSno();
 		$grid->addTotals(['loan_amount_deposit','penalty_amount_deposit','other_amount_deposit']);
 
