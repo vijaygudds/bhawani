@@ -40,56 +40,56 @@ class page_reports_roperformance extends Page {
 			})->type('datetime');
 
 			// [TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]
-			$model->addExpression('loan_amount_deposit')->set(function($m,$q)use($from_date, $to_date){
-				$transaction_row_model = $m->add('Model_TransactionRow');
-				$transaction_join = $transaction_row_model->join('transactions','transaction_id');
-				$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
-				$transaction_type_join->addField('transaction_type_name','name');
-				$transaction_row_model->addCondition('transaction_type_name',TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT);
-				$transaction_row_model
-					->addCondition('account_id',$m->getElement('account_id'))
-					->addCondition($q->expr('[0] >= GREATEST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('from_date'),$from_date]))
-					->addCondition($q->expr('[0] <= LEAST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('to_date'),$to_date]))
-					;
-				return $transaction_row_model->sum('amountCr');
-			})->type('money');
+			// $model->addExpression('loan_amount_deposit')->set(function($m,$q)use($from_date, $to_date){
+			// 	$transaction_row_model = $m->add('Model_TransactionRow');
+			// 	$transaction_join = $transaction_row_model->join('transactions','transaction_id');
+			// 	$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
+			// 	$transaction_type_join->addField('transaction_type_name','name');
+			// 	$transaction_row_model->addCondition('transaction_type_name',TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT);
+			// 	$transaction_row_model
+			// 		->addCondition('account_id',$m->getElement('account_id'))
+			// 		->addCondition($q->expr('[0] >= GREATEST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('from_date'),$from_date]))
+			// 		->addCondition($q->expr('[0] <= LEAST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('to_date'),$to_date]))
+			// 		;
+			// 	return $transaction_row_model->sum('amountCr');
+			// })->type('money');
 
-			$model->addExpression('penalty_amount_deposit')->set(function($m,$q)use($from_date, $to_date){
-				$transaction_row_model = $m->add('Model_TransactionRow');
-				$transaction_join = $transaction_row_model->join('transactions','transaction_id');
-				$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
-				$transaction_type_join->addField('transaction_type_name','name');
-				$transaction_row_model->addCondition('transaction_type_name',TRA_PENALTY_AMOUNT_RECEIVED);
-				$transaction_row_model
-					->addCondition('account_id',$m->getElement('account_id'))
-					->addCondition($q->expr('[0] >= GREATEST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('from_date'),$from_date]))
-					->addCondition($q->expr('[0] <= LEAST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('to_date'),$to_date]))
-					;
-				return $transaction_row_model->sum('amountCr');
-			})->type('money');
+			// $model->addExpression('penalty_amount_deposit')->set(function($m,$q)use($from_date, $to_date){
+			// 	$transaction_row_model = $m->add('Model_TransactionRow');
+			// 	$transaction_join = $transaction_row_model->join('transactions','transaction_id');
+			// 	$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
+			// 	$transaction_type_join->addField('transaction_type_name','name');
+			// 	$transaction_row_model->addCondition('transaction_type_name',TRA_PENALTY_AMOUNT_RECEIVED);
+			// 	$transaction_row_model
+			// 		->addCondition('account_id',$m->getElement('account_id'))
+			// 		->addCondition($q->expr('[0] >= GREATEST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('from_date'),$from_date]))
+			// 		->addCondition($q->expr('[0] <= LEAST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('to_date'),$to_date]))
+			// 		;
+			// 	return $transaction_row_model->sum('amountCr');
+			// })->type('money');
 
-			$model->addExpression('other_amount_deposit')->set(function($m,$q)use($from_date, $to_date){
-				$transaction_row_model = $m->add('Model_TransactionRow');
-				$transaction_join = $transaction_row_model->join('transactions','transaction_id');
-				$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
-				$transaction_type_join->addField('transaction_type_name','name');
-				// $transaction_row_model->addCondition('transaction_type_name',TRA_OTHER_AMOUNT_RECEIVED);
-				$transaction_row_model->addCondition('transaction_type','<>',[TRA_PENALTY_AMOUNT_RECEIVED, TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT]);
-				$transaction_row_model
-					->addCondition('account_id',$m->getElement('account_id'))
-					->addCondition($q->expr('[0] >= GREATEST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('from_date'),$from_date]))
-					->addCondition($q->expr('[0] <= LEAST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('to_date'),$to_date]))
-					;
-				return $transaction_row_model->sum('amountCr');
-			})->type('money');
+			// $model->addExpression('other_amount_deposit')->set(function($m,$q)use($from_date, $to_date){
+			// 	$transaction_row_model = $m->add('Model_TransactionRow');
+			// 	$transaction_join = $transaction_row_model->join('transactions','transaction_id');
+			// 	$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
+			// 	$transaction_type_join->addField('transaction_type_name','name');
+			// 	// $transaction_row_model->addCondition('transaction_type_name',TRA_OTHER_AMOUNT_RECEIVED);
+			// 	$transaction_row_model->addCondition('transaction_type','<>',[TRA_PENALTY_AMOUNT_RECEIVED, TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT]);
+			// 	$transaction_row_model
+			// 		->addCondition('account_id',$m->getElement('account_id'))
+			// 		->addCondition($q->expr('[0] >= GREATEST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('from_date'),$from_date]))
+			// 		->addCondition($q->expr('[0] <= LEAST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('to_date'),$to_date]))
+			// 		;
+			// 	return $transaction_row_model->sum('amountCr');
+			// })->type('money');
 
-			$model->addExpression('total_amount')->set(function($m,$q){
-				return $q->expr('(IFNULL([0],0)+IFNULL([1],0))+(IFNULL([2],0))',[
-					$m->getElement('loan_amount_deposit'),
-					$m->getElement('penalty_amount_deposit'),
-					$m->getElement('other_amount_deposit')
-				]);
-			})->type('money');	
+			// $model->addExpression('total_amount')->set(function($m,$q){
+			// 	return $q->expr('(IFNULL([0],0)+IFNULL([1],0))+(IFNULL([2],0))',[
+			// 		$m->getElement('loan_amount_deposit'),
+			// 		$m->getElement('penalty_amount_deposit'),
+			// 		$m->getElement('other_amount_deposit')
+			// 	]);
+			// })->type('money');	
 
 			$model->addExpression('to_date_date')->set(function($m,$q){
 				return $q->expr('Date([0])',[$m->getElement('to_date')]);
@@ -146,7 +146,7 @@ class page_reports_roperformance extends Page {
 		$grid = $this->add('Grid_AccountsBase');
 		$grid->setModel($model);
 		$grid->addSno();
-		$grid->addTotals(['loan_amount_deposit','penalty_amount_deposit','other_amount_deposit']);
+		// $grid->addTotals(['loan_amount_deposit','penalty_amount_deposit','other_amount_deposit']);
 
 		foreach ($documents as $dc) {
 			$grid->addFormatter($this->app->normalizeName($dc),'wrap');
