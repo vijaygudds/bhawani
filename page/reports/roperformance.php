@@ -27,17 +27,17 @@ class page_reports_roperformance extends Page {
 
 		if($filter){
 
-			$model->addExpression('bike_surrendered_on')->set(function($m,$q){
-				return $m->refSQL('account_id')->fieldQuery('bike_surrendered_on');
-			});
+			// $model->addExpression('bike_surrendered_on')->set(function($m,$q){
+			// 	return $m->refSQL('account_id')->fieldQuery('bike_surrendered_on');
+			// });
 
-			$model->addExpression('effective_from')->set(function($m,$q)use($from_date){
-				return $q->expr('GREATEST([0],"[1]")',[$m->getElement('from_date'),$from_date]);
-			})->type('datetime');
+			// $model->addExpression('effective_from')->set(function($m,$q)use($from_date){
+			// 	return $q->expr('GREATEST([0],"[1]")',[$m->getElement('from_date'),$from_date]);
+			// })->type('datetime');
 
-			$model->addExpression('effective_to')->set(function($m,$q)use($to_date){
-				return $q->expr('LEAST([0],"[1]")',[$m->getElement('to_date'),$this->app->nextDate($to_date)]);
-			})->type('datetime');
+			// $model->addExpression('effective_to')->set(function($m,$q)use($to_date){
+			// 	return $q->expr('LEAST([0],"[1]")',[$m->getElement('to_date'),$this->app->nextDate($to_date)]);
+			// })->type('datetime');
 
 			// [TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]
 			// $model->addExpression('loan_amount_deposit')->set(function($m,$q)use($from_date, $to_date){
