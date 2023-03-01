@@ -132,7 +132,7 @@ class page_reports_roperformance extends Page {
 			$model->addCondition('id','-1');
 		}
 
-		$documents=['BIKE SURRENDER','BIKE LOCATION','VISIT CHARGE','Recovery Status'];
+		$documents=['BIKE SURRENDER','BIKE LOCATION','VISIT CHARGE'/*,'Recovery Status'*/];
 
 		foreach ($documents as $dc) {
 			$model->addExpression($this->app->normalizeName($dc))->set(function($m,$q)use($dc){
@@ -144,13 +144,13 @@ class page_reports_roperformance extends Page {
 		}
 
 		$grid = $this->add('Grid_AccountsBase');
-		$grid->setModel($model);
+		$grid->setModel($model,['account_id']);
 		$grid->addSno();
 		$grid->addTotals(['loan_amount_deposit','penalty_amount_deposit','other_amount_deposit']);
 
-		foreach ($documents as $dc) {
-			$grid->addFormatter($this->app->normalizeName($dc),'wrap');
-		}
+		// foreach ($documents as $dc) {
+		// 	$grid->addFormatter($this->app->normalizeName($dc),'wrap');
+		// }
 
 		$grid->addHook('formatRow',function($g)use($documents){
 			foreach ($documents as $dc) {
@@ -165,7 +165,7 @@ class page_reports_roperformance extends Page {
 		//$grid->removeColumn('to_date');
 		$grid->removeColumn('_to_date');
 		$grid->removeColumn('to_date_date');
-		$grid->addFormatter('account','WRAP');
+		// $grid->addFormatter('account','WRAP');
 
 		if($filter){
 			// $grid->setFormatter('crpb_sum','template')->setTemplate('<a class="crbp" href="#" data-agentid="{$agent_id}" data-agentfromdate="{$effective_from}" data-agenttodate="{$effective_to}" >{$crpb_sum}</a>','crpb_sum');
