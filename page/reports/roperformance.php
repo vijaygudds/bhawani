@@ -134,32 +134,32 @@ class page_reports_roperformance extends Page {
 
 		$documents=['BIKE SURRENDER','BIKE LOCATION','VISIT CHARGE','Recovery Status'];
 
-		// foreach ($documents as $dc) {
-		// 	$model->addExpression($this->app->normalizeName($dc))->set(function($m,$q)use($dc){
-		// 		return $this->add('Model_DocumentSubmitted')
-		// 					->addCondition('accounts_id',$q->getField('account_id'))
-		// 					->addCondition('documents',$dc)
-		// 					->fieldQuery('Description');
-		// 	});
-		// }
+		foreach ($documents as $dc) {
+			$model->addExpression($this->app->normalizeName($dc))->set(function($m,$q)use($dc){
+				return $this->add('Model_DocumentSubmitted')
+							->addCondition('accounts_id',$q->getField('account_id'))
+							->addCondition('documents',$dc)
+							->fieldQuery('Description');
+			});
+		}
 
 		$grid = $this->add('Grid_AccountsBase');
 		$grid->setModel($model);
 		$grid->addSno();
 		$grid->addTotals(['loan_amount_deposit','penalty_amount_deposit','other_amount_deposit']);
 
-		// foreach ($documents as $dc) {
-		// 	$grid->addFormatter($this->app->normalizeName($dc),'wrap');
-		// }
+		foreach ($documents as $dc) {
+			$grid->addFormatter($this->app->normalizeName($dc),'wrap');
+		}
 
-		// $grid->addHook('formatRow',function($g)use($documents){
-		// 	foreach ($documents as $dc) {
-		// 		$field=$this->app->normalizeName($dc);
-		// 		$g->current_row_html[$field] = '<div style="width:500px;">'.$g->current_row[$field].'</div>';
-		// 	}
-		// 	$field='account';
-		// 	$g->current_row_html[$field] = '<div style="width:500px;">'.$g->current_row[$field].'</div>';
-		// });
+		$grid->addHook('formatRow',function($g)use($documents){
+			foreach ($documents as $dc) {
+				$field=$this->app->normalizeName($dc);
+				$g->current_row_html[$field] = '<div style="width:500px;">'.$g->current_row[$field].'</div>';
+			}
+			$field='account';
+			$g->current_row_html[$field] = '<div style="width:500px;">'.$g->current_row[$field].'</div>';
+		});
 
 		//$grid->removeColumn('from_date');
 		//$grid->removeColumn('to_date');
