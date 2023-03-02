@@ -33,17 +33,6 @@ class Model_LegalCase extends Model_Table {
 						->addCondition('id',$m->getElement('account_id'))
 						->fieldQuery('member_name_only');
 		});
-		$this->addExpression('owner_member_id')->set(function ($m,$q){
-			return $this->add('Model_Account')
-						->addCondition('id',$m->getElement('account_id'))
-						->fieldQuery('member_id');
-		});
-		$this->addExpression('g_member_id')->set(function ($m,$q){
-			return $this->add('Model_AccountGuarantor')
-						->addCondition('account_id',$m->getElement('account_id'))
-						->setLimit(1)
-						->fieldQuery('member_id');
-		});
 
 		$this->addExpression('account_guarantor')->set(function($m,$q){
 			$ag = $this->add('Model_AccountGuarantor');
