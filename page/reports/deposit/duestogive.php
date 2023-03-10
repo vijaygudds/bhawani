@@ -75,6 +75,24 @@ class page_reports_deposit_duestogive extends Page {
 				)";
 		});
 
+		$account->addExpression('paid_EMI')->set(function($m,$q){
+				return $m->refSQL('Premium')
+						->addCondition('PaidOn','<>',null)
+						// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+						->addCondition('PaidOn','<=',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today))
+						->count();
+		})->sortable(true);
+
+		$account->addExpression('due_premium_count')->set(function($m,$q){
+			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_count_table'));
+			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+			$dpc_m->addCondition('DueDate','<=',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			$dpc_m->addCondition('account_id',$q->getField('id'));
+			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn > '". ($_GET['on_date']?:$m->api->today) ."')");
+			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			return $dpc_m->count();
+		})->sortable(true);
+
 
 		// after confirm implement this becase when selecting checkbox from filter form it gives document
 		// $document_submitted_join=$account->join('documents_submitted.accounts_id');
@@ -84,7 +102,7 @@ class page_reports_deposit_duestogive extends Page {
 		$account->addExpression('agent_mo_id')->set($account->refSQL('agent_id')->fieldQuery('mo_id'));
 		$account->addExpression('agent_mo_name')->set($account->refSQL('agent_id')->fieldQuery('mo'))->caption('Mo');
 
-		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','AdharNumber','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type');
+		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','AdharNumber','paid_EMI','due_premium_count','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type');
 
 
 		if($_GET['filter']){			
