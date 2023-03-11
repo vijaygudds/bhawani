@@ -10,6 +10,7 @@ class Model_AgentTDS extends Model_Table {
 		$this->hasOne('Agent','agent_id')->display(['form'=>'autocomplete/Basic']);
 		// $this->hasOne('Transaction','transaction_id');
 		$this->hasOne('Account','related_account_id')->display(['form'=>'autocomplete/Basic']);
+		$this->addField('transaction_id');
 
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 
@@ -25,12 +26,14 @@ class Model_AgentTDS extends Model_Table {
 
 	// $this->add('Model_AgentTDS')->createNewEntry($agent_id,$transaction_id$related_account_id,$total_commission,$tds,$net_commission);
 	function createNewEntry($agent_id,$transaction_id,$related_account_id,$total_commission,$tds,$net_commission){
+		
 		if($this->loaded()) throw new \Exception("Record already loaded, cannot create new", 1);
 
 		if($total_commission == 0) return;
 		
+		 // echo "Transaction_id = ". $transaction_id ;
 		$this['agent_id']=$agent_id;
-		// $this['transaction_id']=$transaction_id; // not used now, we are dependent on related_account_id now
+		$this['transaction_id']=$transaction_id; // not used now, we are dependent on related_account_id now
 		$this['related_account_id']=$related_account_id;
 		$this['total_commission']=$total_commission;
 		$this['tds']=$tds;

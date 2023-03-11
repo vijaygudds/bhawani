@@ -56,6 +56,17 @@ class page_transactions_remove extends Page {
 					if($form['confirm_amount'] != $transaction['cr_sum'])
 						$form->displayError('confirm_amount','Amount Mismatched');
 
+					$agent_tds = $this->add('Model_AgentTDS');
+					$agent_tds->addCondition('transaction_id',$transaction->id);
+					$agent_tds->addCondition('created_at','>=',$transaction['created_at']);
+					$agent_tds->addCondition('created_at','<',$p->api->nextDate($transaction['created_at']));
+					$agent_tds->addCondition('branch_id',$transaction['branch_id']);
+					$agent_tds->tryLoadAny();
+					if($agent_tds->loaded()){
+						throw new \Exception("Please Delete or Remove First Related Acoount AgentTDS Entry", 1);
+						
+					}
+
 					try{
 						$p->api->db->beginTransaction();
 								$p->add('Model_Account')->load($form['related_account'])->markDirty();
