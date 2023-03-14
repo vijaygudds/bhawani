@@ -81,10 +81,10 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 
 		if ( $test_account ) $sbca_account->addCondition( 'id', $test_account->id );
 
-		foreach ( $sbca_account as $accounts_array ) {
-			if ( !$sbca_account->isMinBalanceChargeAppliedInThisQuarter( $on_date ) )
-				$sbca_account->applyMinBalanceCharge( $on_date );
-		}
+		// foreach ( $sbca_account as $accounts_array ) {
+		// 	if ( !$sbca_account->isMinBalanceChargeAppliedInThisQuarter( $on_date ) )
+		// 		$sbca_account->applyMinBalanceCharge( $on_date );
+		// }
 	}
 
 	function monthly( $branch=null, $on_date=null, $test_account=null ) {
