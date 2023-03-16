@@ -121,7 +121,7 @@ class page_reports_loan_dispatch extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied','file_charge','gst_amount','insurance_processing_fees_amount','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied','file_charge','gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -238,13 +238,41 @@ class page_reports_loan_dispatch extends Page {
 			return $trans_m->sum('amountCr');
 		});
 
-		$account_model->addExpression('gst_amount')->set(function($m,$q){
-			$trans_m = $this->add('Model_TransactionRow');
-			$trans_m->addCondition('reference_id',$q->getField('id'));
-			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
-			$trans_m->addCondition('scheme','Duties Taxes');
-			return $q->expr('IFNULL([0],0)',[$trans_m->sum('amountCr')]);
+		// $account_model->addExpression('gst_amount')->set(function($m,$q){
+		// 	$trans_m = $this->add('Model_TransactionRow');
+		// 	$trans_m->addCondition('reference_id',$q->getField('id'));
+		// 	$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
+		// 	$trans_m->addCondition('scheme','Duties Taxes');
+		// 	return $q->expr('IFNULL([0],0)',[$trans_m->sum('amountCr')]);
+		// });
+		$account_model->addExpression('cgst_amount')->set(function($m,$q){
+			$tr_row = $this->add('Model_TransactionRow');
+			$tr = $tr_row->join('transactions','transaction_id');
+			$tr->addField('vl_account','reference_id');
+			$tr->addField('tr_tran_type','transaction_type_id');
+
+			$tr_row->addCondition('vl_account',$q->getField('id'));
+			$tr_row->addCondition('tr_tran_type',8);
+			// $tr_row->setLimit(1);
+			$tr_row->addCondition('account','like','% CGST 9% %');
+			return $tr_row->fieldQuery('amountCr');
 		});
+		$account_model->addExpression('sgst_amount')->set(function($m,$q){
+			$tr_row = $this->add('Model_TransactionRow');
+			$tr = $tr_row->join('transactions','transaction_id');
+			$tr->addField('vl_account','reference_id');
+			$tr->addField('tr_tran_type','transaction_type_id');
+
+			$tr_row->addCondition('vl_account',$q->getField('id'));
+			$tr_row->addCondition('tr_tran_type',8);
+			// $tr_row->setLimit(1);
+			$tr_row->addCondition('account','like','% SGST 9% %');
+			return $tr_row->sum('amountCr');
+		});
+
+		// $account_model->addExpression('gst_amount')->set(function($m,$q){
+		// 	return $q->expr("IFNULL([0],0) + IFNULL([1],0) )",array($m->getElement('cgst_amount'),$m->getElement('sgst_amount')));
+		// });
 
 		$account_model->addExpression('insurance_processing_fees_amount')->set(function($m,$q){
 			$trans_m = $this->add('Model_TransactionRow');
@@ -258,7 +286,7 @@ class page_reports_loan_dispatch extends Page {
 
 
 		$account_model->addExpression('cheque_amount')->set(function($m,$q){
-			return $q->expr("[0]-([1]+IFNULL([2],0) + IFNULL([3],0)+IFNULL([4],0) )",array($m->getElement('Amount'),$m->getElement('file_charge'),$m->getElement('sm_amount'),$m->getElement('gst_amount'),$m->getElement('insurance_processing_fees_amount')));
+			return $q->expr("[0]-([1]+IFNULL([2],0) + IFNULL([3],0)+IFNULL([4],0)+IFNULL([5],0)+IFNULL([6],0) )",array($m->getElement('Amount'),$m->getElement('file_charge'),$m->getElement('sm_amount')/*,$m->getElement('gst_amount')*/,$m->getElement('insurance_processing_fees_amount'),$m->getElement('sgst_amount'),$m->getElement('cgst_amount'),$m->getElement('loan_interest_recevied')));
 		});
 
 		$account_model->addExpression('LoanAgainst')->set(function($m,$q){
