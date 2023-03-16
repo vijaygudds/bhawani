@@ -225,8 +225,8 @@ class page_reports_loan_dispatch extends Page {
 			$tr_row->addCondition('vl_account',$q->getField('id'));
 			$tr_row->addCondition('tr_tran_type',8);
 			// $tr_row->setLimit(1);
-			// $tr_row->addCondition('account_id','in',[275866,275869,275863,275862,275868,275864,275867,275865,275861]);
-			$tr_row->addCondition('account','like', "%".$this->api->currentBranch['Code']." "."INTEREST RECEIVED ON LOAN %")
+			$tr_row->addCondition('account_id','in',[275866,275869,275863,275862,275868,275864,275867,275865,275861]);
+			// $tr_row->addCondition('account','like', "%".$this->api->currentBranch['Code']." "."INTEREST RECEIVED ON LOAN %");
 			return $tr_row->fieldQuery('amountCr');//->count()->getOne();
 			// return $tr_row->sum('amountCr');
 		});
