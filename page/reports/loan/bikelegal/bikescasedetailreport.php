@@ -7,6 +7,14 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 		parent::init();
 
 		$form= $this->add('Form');
+		$acc_m = $this->add('Model_Account');
+		$acc_m->addCondition($acc_m->dsql()->orExpr()
+				->where($acc_m->getElement('is_in_legal'),true)
+				->where($acc_m->getElement('is_in_arbitration'),true)
+				->where($acc_m->getElement('is_given_for_legal_process'),true)
+			);
+		$account_field = $form->addField('autocomplete/Basic','account');
+		$account_field->setModel($acc_m);
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('All');
 		$dealer_field->setModel('ActiveDealer');
 
@@ -229,108 +237,124 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 
 		$grid = $this->add('Grid_AccountsBase')->addSno();
 		if($this->api->stickyGET('filter')){
-			if($this->api->stickyGET('dealer')){
-				$account_model->addCondition('dealer_id',$_GET['dealer']);
-			}
-
-			if($this->api->stickyGET('last_hearing_stage')){
-				$account_model->addCondition('last_hearing_stage',$_GET['last_hearing_stage']);
-			}
-
-			foreach ($document as $junk) {
-				$doc_id = $document->id;
-				if($this->api->stickyGET('doc_'.$document->id)){
-					$this->api->stickyGET('doc_'.$document->id);
-					$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
-						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
-					});
-					$grid_column_array[] = $this->api->normalizeName($document['name']);
-				}
-			}
-
-			switch ($this->app->stickyGET('loan_type')) {
-				case 'vl':
-					$account_model->addCondition('AccountNumber','like','%vl%');
-					$account_model->addCondition('AccountNumber','not like','%fvl%');
-					break;
-				case 'pl':
-					$account_model->addCondition('AccountNumber','like','%pl%');
-					break;
-				case 'fvl':
-					$account_model->addCondition('AccountNumber','like','%FVL%');
-					break;
-				case 'sl':
-					$account_model->addCondition('AccountNumber','like','%SL%');
-					break;
-				case 'hl':
-					$account_model->addCondition('AccountNumber','like','%HL%');
-					break;
-				case 'other':
-					$account_model->addCondition('AccountNumber','not like','%hl%');
-					$account_model->addCondition('AccountNumber','not like','%pl%');
-					$account_model->addCondition('AccountNumber','not like','%vl%');
-					// $account_model->_dsql()->where('(accounts.AccountNumber not like "%pl%" and accounts.AccountNumber not like "%pl%")');
-					break;
-			}
-
-			switch ($this->app->stickyGET('legal_status')) {
-				case 'is_in_legal':
-					$account_model->addCondition('is_in_legal',true);
-					$account_model->addCondition('is_in_arbitration',false);
-					if($this->app->stickyGET('from_date'))
-						$account_model->addCondition('legal_filing_date','>=',$_GET['from_date']);
-					if($this->app->stickyGET('to_date'))
-						$account_model->addCondition('legal_filing_date','<',$this->app->nextDate($_GET['to_date']));
-					$grid_column_array[]= 'legal_filing_date';
-					break;
-				case 'is_in_arbitration':
-					$account_model->addCondition('is_in_legal',false);
-					$account_model->addCondition('is_in_arbitration',true);
-					if($this->app->stickyGET('from_date'))
-						$account_model->addCondition('arbitration_on','>=',$_GET['from_date']);
-					if($this->app->stickyGET('to_date'))
-						$account_model->addCondition('arbitration_on','<',$this->app->nextDate($_GET['to_date']));
-					$grid_column_array[]= 'arbitration_on';
-					break;
-				case 'is_in_arbitration_process':
-					$account_model->addCondition('is_given_for_legal_process',true);
-					$account_model->addCondition('legal_case_not_submitted_reason','<>','');
-					$account_model->addCondition('legal_case_not_submitted_reason','<>',null);
-					$account_model->addCondition('is_in_arbitration',false);
-					$account_model->addCondition('is_in_legal',false);
-					$account_model->addCondition('is_legal_case_finalised',false);
-
-					if($this->app->stickyGET('from_date'))
-						$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);
-					if($this->app->stickyGET('to_date'))
-						$account_model->addCondition('legal_process_given_date','<',$this->app->nextDate($_GET['to_date']));
-					$grid_column_array[]= 'legal_process_given_date';
-					break;
-				case 'is_in_legal_process':
-					$account_model->addCondition('is_in_legal',false);
-					$account_model->addCondition('is_in_arbitration',false);
-					$account_model->addCondition('is_given_for_legal_process',true);
-					$account_model->addCondition([['legal_case_not_submitted_reason',''],['legal_case_not_submitted_reason',null]]);
-
-					if($this->app->stickyGET('from_date'))
-						$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);
-					if($this->app->stickyGET('to_date'))
-						$account_model->addCondition('legal_process_given_date','<',$this->app->nextDate($_GET['to_date']));
-					$grid_column_array[]= 'legal_process_given_date';
-					break;
+			if($this->api->stickyGET('account')){
+				$account_model->addCondition('id',$this->api->stickyGET('account'));
 				
-				default:
-					$account_model->addCondition([['is_in_legal',true],['is_in_arbitration',true],['is_given_for_legal_process',true]]);
-					$grid_column_array[]= 'legal_filing_date';
-					$grid_column_array[]= 'arbitration_on';
-					$grid_column_array[]= 'legal_process_given_date';
-					$grid->add('View_Error',null,'grid_buttons')->set('Date Range is not effective in All data');
-					// if($this->app->stickyGET('from_date'))
-					// 	$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);
-					// if($this->app->stickyGET('to_date'))
-					// 	$account_model->addCondition('legal_process_given_date','<',$this->app->nextDate($_GET['from_date']));
+				foreach ($document as $junk) {
+					$doc_id = $document->id;
+					if($this->api->stickyGET('doc_'.$document->id)){
+						$this->api->stickyGET('doc_'.$document->id);
+						$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
+							return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
+						});
+						$grid_column_array[] = $this->api->normalizeName($document['name']);
+					}
+				}
+			}	
+			if(!$this->api->stickyGET('account')){
+				if($this->api->stickyGET('dealer')){
+					$account_model->addCondition('dealer_id',$_GET['dealer']);
+				}
+
+				if($this->api->stickyGET('last_hearing_stage')){
+					$account_model->addCondition('last_hearing_stage',$_GET['last_hearing_stage']);
+				}
+
+				foreach ($document as $junk) {
+					$doc_id = $document->id;
+					if($this->api->stickyGET('doc_'.$document->id)){
+						$this->api->stickyGET('doc_'.$document->id);
+						$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
+							return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
+						});
+						$grid_column_array[] = $this->api->normalizeName($document['name']);
+					}
+				}
+
+				switch ($this->app->stickyGET('loan_type')) {
+					case 'vl':
+						$account_model->addCondition('AccountNumber','like','%vl%');
+						$account_model->addCondition('AccountNumber','not like','%fvl%');
+						break;
+					case 'pl':
+						$account_model->addCondition('AccountNumber','like','%pl%');
+						break;
+					case 'fvl':
+						$account_model->addCondition('AccountNumber','like','%FVL%');
+						break;
+					case 'sl':
+						$account_model->addCondition('AccountNumber','like','%SL%');
+						break;
+					case 'hl':
+						$account_model->addCondition('AccountNumber','like','%HL%');
+						break;
+					case 'other':
+						$account_model->addCondition('AccountNumber','not like','%hl%');
+						$account_model->addCondition('AccountNumber','not like','%pl%');
+						$account_model->addCondition('AccountNumber','not like','%vl%');
+						// $account_model->_dsql()->where('(accounts.AccountNumber not like "%pl%" and accounts.AccountNumber not like "%pl%")');
+						break;
+				}
+
+				switch ($this->app->stickyGET('legal_status')) {
+					case 'is_in_legal':
+						$account_model->addCondition('is_in_legal',true);
+						$account_model->addCondition('is_in_arbitration',false);
+						if($this->app->stickyGET('from_date'))
+							$account_model->addCondition('legal_filing_date','>=',$_GET['from_date']);
+						if($this->app->stickyGET('to_date'))
+							$account_model->addCondition('legal_filing_date','<',$this->app->nextDate($_GET['to_date']));
+						$grid_column_array[]= 'legal_filing_date';
+						break;
+					case 'is_in_arbitration':
+						$account_model->addCondition('is_in_legal',false);
+						$account_model->addCondition('is_in_arbitration',true);
+						if($this->app->stickyGET('from_date'))
+							$account_model->addCondition('arbitration_on','>=',$_GET['from_date']);
+						if($this->app->stickyGET('to_date'))
+							$account_model->addCondition('arbitration_on','<',$this->app->nextDate($_GET['to_date']));
+						$grid_column_array[]= 'arbitration_on';
+						break;
+					case 'is_in_arbitration_process':
+						$account_model->addCondition('is_given_for_legal_process',true);
+						$account_model->addCondition('legal_case_not_submitted_reason','<>','');
+						$account_model->addCondition('legal_case_not_submitted_reason','<>',null);
+						$account_model->addCondition('is_in_arbitration',false);
+						$account_model->addCondition('is_in_legal',false);
+						$account_model->addCondition('is_legal_case_finalised',false);
+
+						if($this->app->stickyGET('from_date'))
+							$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);
+						if($this->app->stickyGET('to_date'))
+							$account_model->addCondition('legal_process_given_date','<',$this->app->nextDate($_GET['to_date']));
+						$grid_column_array[]= 'legal_process_given_date';
+						break;
+					case 'is_in_legal_process':
+						$account_model->addCondition('is_in_legal',false);
+						$account_model->addCondition('is_in_arbitration',false);
+						$account_model->addCondition('is_given_for_legal_process',true);
+						$account_model->addCondition([['legal_case_not_submitted_reason',''],['legal_case_not_submitted_reason',null]]);
+
+						if($this->app->stickyGET('from_date'))
+							$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);
+						if($this->app->stickyGET('to_date'))
+							$account_model->addCondition('legal_process_given_date','<',$this->app->nextDate($_GET['to_date']));
+						$grid_column_array[]= 'legal_process_given_date';
+						break;
 					
-					break;
+					default:
+						$account_model->addCondition([['is_in_legal',true],['is_in_arbitration',true],['is_given_for_legal_process',true]]);
+						$grid_column_array[]= 'legal_filing_date';
+						$grid_column_array[]= 'arbitration_on';
+						$grid_column_array[]= 'legal_process_given_date';
+						$grid->add('View_Error',null,'grid_buttons')->set('Date Range is not effective in All data');
+						// if($this->app->stickyGET('from_date'))
+						// 	$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);
+						// if($this->app->stickyGET('to_date'))
+						// 	$account_model->addCondition('legal_process_given_date','<',$this->app->nextDate($_GET['from_date']));
+						
+						break;
+				}
 			}
 
 			switch ($this->app->stickyGET('account_status')) {
@@ -355,7 +379,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 		$grid->addPaginator(1000);
 
 		if($form->isSubmitted()){
-			$send = array('filter'=>1,'dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_status'=>$form['account_status'],'legal_status'=>$form['legal_status'],'loan_type'=>$form['loan_type'],'last_hearing_stage'=>$form['last_hearing_stage']?:0);
+			$send = array('filter'=>1,'account'=>$form['account'],'dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_status'=>$form['account_status'],'legal_status'=>$form['legal_status'],'loan_type'=>$form['loan_type'],'last_hearing_stage'=>$form['last_hearing_stage']?:0);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];
