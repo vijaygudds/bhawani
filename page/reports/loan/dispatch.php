@@ -121,7 +121,7 @@ class page_reports_loan_dispatch extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied','file_charge','gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','ActiveStatus','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied','file_charge','gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -307,7 +307,7 @@ class page_reports_loan_dispatch extends Page {
 		// $order->move('file_charge','after','Amount')->now();
 		// $order->move('cheque_amount','after','file_charge')->now();
 
-		$grid->addPaginator(500);
+		$grid->addPaginator(1000);
 
 		$grid->addTotals(array('total','Amount','file_charge','cheque_amount','emi'));
 
