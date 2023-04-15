@@ -452,7 +452,7 @@ class Model_Account_Loan extends Model_Account{
 		if(!$this->hasElement('due_panelty')) throw $this->exception('The Account must be called via scheme daily function');
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penal Interest Receive on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penal Interest Debited on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_id'=>$this->id));
 
 		$amount = $this['due_panelty'];
 		
