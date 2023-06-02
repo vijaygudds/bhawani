@@ -44,7 +44,7 @@ class page_reports_agent_crpb extends Page {
 		$grid_1= $this->add('Grid');
 		$grid_1->setModel($agent_model,array('member','PhoneNos','account','self_crpb','total_group_crpb','code','cadre','total_group_count','self_business','total_team_business'));
 
-		$grid_1->addPaginator(20);
+		$grid_1->addPaginator(250);
 
 		$this->add('VirtualPage')->addColumn('team_members',"Team Members",null,$grid_1)->set(function($p){
 			$grid = $p->add('Grid');
