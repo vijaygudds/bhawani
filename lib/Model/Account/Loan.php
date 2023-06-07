@@ -16,6 +16,7 @@ class Model_Account_Loan extends Model_Account{
 		$this->getElement('Amount')->caption('Loan Amount');
 		$this->getElement('CurrentInterest')->caption('Panelty');
 		$this->getElement('account_type')->enum(explode(",",LOAN_TYPES))->mandatory(true);
+		$this->getElement('sig_image_id')->mandatory(false);
 		$this->getElement('doc_image_id')->mandatory(false);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
