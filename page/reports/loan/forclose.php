@@ -43,7 +43,8 @@ class page_reports_loan_forclose extends Page {
 				->fieldQuery('DueDate')
 		);
 
-		$account_model->addExpression('interest_rate')->set($account_model->refSQL('scheme_id')->fieldQuery('Interest'));
+		// $account_model->addExpression('interest_rate')->set($account_model->refSQL('scheme_id')->fieldQuery('Interest'));
+		$account_model->addExpression('interest_rate')->set("18");
 		$account_model->addExpression('premium_count')->set($account_model->refSQL('Premium')->count());
 		$account_model->addExpression('PaneltyCharged')->set($account_model->refSQL('Premium')->sum('PaneltyCharged'));
 		$account_model->addExpression('uncounted_panelty_days')->set(function ($m, $q) {
