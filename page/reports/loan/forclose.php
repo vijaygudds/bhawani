@@ -226,7 +226,7 @@ class page_reports_loan_forclose extends Page {
 			$bal = $g->model->getOpeningBalance($g->api->nextDate(date("Y-m-d", strtotime($g->model['last_premium_date'] . '+1 month'))));
 
 			$days = $g->api->my_date_diff($g->api->today, date("Y-m-d", strtotime($g->model['last_premium_date'] . '+1 month')));
-			$g->time_over_charge = round(($bal['Dr'] - $bal['Cr']) * ($g->model['interest_rate_for_time_over'] / 100) / 365 * $days['days_total']);
+			$g->time_over_charge = round(($bal['Dr'] - $bal['Cr']) * (18 / 100) / 365 * $days['days_total']);
 			$g->current_row[$f] = $g->time_over_charge;
 		});
 
