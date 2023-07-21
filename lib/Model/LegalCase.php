@@ -19,6 +19,9 @@ class Model_LegalCase extends Model_Table {
 		$this->addField('remarks');
 
 		$this->hasMany('LegalCaseHearing','legalcase_id');
+		$this->addExpression('legalcasehearing_stage')->set(function($m,$q){
+			return $m->refSQL('LegalCaseHearing')->setLimit(1)->setOrder('id','desc')->fieldQuery('stage');
+		})->caption('Stage');
 
 		$this->addExpression('legal_filing_date')->set(function($m,$q){
 			return $m->refSQL('account_id')->fieldQuery('legal_filing_date');
@@ -27,6 +30,7 @@ class Model_LegalCase extends Model_Table {
 		$this->addExpression('last_hearing_date')->set(function($m,$q){
 			return $m->refSQL('LegalCaseHearing')->setLimit(1)->setOrder('hearing_date','desc')->fieldQuery('hearing_date');
 		});
+
 
 		$this->addExpression('owner')->set(function ($m,$q){
 			return $this->add('Model_Account')
