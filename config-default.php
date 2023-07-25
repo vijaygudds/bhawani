@@ -170,7 +170,7 @@ define('RECOEVRY_ANY_LEGAL_CHARGES_ACCOUNT_TRA_ARRAY',[
 													]
 );
 
-define('LEGAL_CASE_TYPES',['N.I. ACT','420','Civil','Other']);
+define('LEGAL_CASE_TYPES',['N.I. ACT','109','420','422','Civil','Other']);
 define('LEGAL_CASE_STAGES',['Investigation (Jaanch)','Allegation (Prasangyan)','Summon','Bailable Warrant','Arrest Warrent','Evidance','Debate','Order','Finalised']);
 
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
