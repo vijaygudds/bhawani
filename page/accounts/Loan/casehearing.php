@@ -13,7 +13,7 @@ class page_accounts_Loan_casehearing extends Page {
 		$mem_j = $acc_j->leftJoin('members','member_id');
 		$mem_j->addField('PhoneNos');
 		$mem_j->addField('PermanentAddress');
-		$crud->setModel($m,['name','bccs_file_no','court','autorised_person','case_type','case_on','file_verified_by','advocate','remarks','legalcasehearing_stage']);
+		$crud->setModel($m,['account','owner','name','bccs_file_no','court','legalcasehearing_stage','legal_filing_date','last_hearing_date','autorised_person','case_type','case_on','file_verified_by','advocate','remarks','account_guarantor']);
                 $crud->addRef('LegalCaseHearing',['grid_fields'=>['legalcase','hearing_date','stage','owner','dealer']]);
 	}
 }
