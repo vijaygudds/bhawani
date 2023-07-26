@@ -10,6 +10,7 @@ class page_noclog extends Page {
 		$tabs->addTabURL('noclog_new','Send NOC');
 		$tabs->addTabURL('noclog_receive','Receive NOC');
 		$tabs->addTabURL('noclog_returnreceive','Return NOC Receive');
+		$tabs->addTabURL('noclog_edit','Update NOC Status');
 
 	}
 }
