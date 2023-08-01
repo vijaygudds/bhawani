@@ -105,7 +105,7 @@ class Model_Scheme extends Model_Table {
 		if($this->hasElement('Interest')) $this->getElement('Interest')->system(true);
 		if($this->hasElement('InterestMode')) $this->getElement('InterestMode')->system(true);
 		if($this->hasElement('InterestRateMode')) $this->getElement('InterestRateMode')->system(true);
-		if($this->hasElement('AccountOpenningCommission')) $this->getElement('AccountOpenningCommission')->system(true);
+		// if($this->hasElement('AccountOpenningCommission')) $this->getElement('AccountOpenningCommission')->system(true);
 		if($this->hasElement('CollectorCommissionRate')) $this->getElement('CollectorCommissionRate')->system(true);
 		if($this->hasElement('Commission')) $this->getElement('Commission')->system(true);
 		if($this->hasElement('ProcessingFees')) $this->getElement('ProcessingFees')->system(true);
@@ -119,7 +119,7 @@ class Model_Scheme extends Model_Table {
 		// if($this->hasElement('DepriciationPercentAfterSep')) $this->getElement('DepriciationPercentAfterSep')->system(true);
 		if($this->hasElement('ProcessingFeesinPercent')) $this->getElement('ProcessingFeesinPercent')->system(true);
 		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
-		if($this->hasElement('CRPB')) $this->getElement('CRPB')->system(true);
+		// if($this->hasElement('CRPB')) $this->getElement('CRPB')->system(true);
 		
 		// if($this->hasElement('MinLimit')) $this->getElement('MinLimit')->system(true);
 		// if($this->hasElement('MaxLimit')) $this->getElement('MaxLimit')->system(true);
