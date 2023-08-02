@@ -180,8 +180,7 @@ define('MEMBER_TYPES',                         "General,VIP,VVIP,Other VIP,Prosp
 
 // define('ACCOUNT_TYPES',                         "LOAN");
 // Keep Default in last as it reverts TDS ect that are not any product specific
-// define('ACCOUNT_TYPES',                         "DDS2,Loan,CC,FixedAndMis,SavingAndCurrent,Recurring,Default");
-define('ACCOUNT_TYPES',                         "Default");
+define('ACCOUNT_TYPES',                         "DDS2,Loan,CC,FixedAndMis,SavingAndCurrent,Recurring,Default");
 define('ACCOUNT_TYPE_DEFAULT',                  "Default");
 define('ACCOUNT_TYPE_BANK',                     "SavingAndCurrent");
 define('ACCOUNT_TYPE_SAVING',                     "SavingAndCurrent");
