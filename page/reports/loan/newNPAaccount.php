@@ -41,6 +41,9 @@ class page_reports_loan_newNPAaccount extends Page {
 		$member_join->addField('landmark');
 
 		$account_model->addCondition('DefaultAC',false);
+		$account_model->addCondition('is_given_for_legal_process',false);
+		$account_model->addCondition('is_in_legal',false);
+		$account_model->addCondition('is_in_arbitration',false);
 
 		// $account_model_j=$account_model->join('premiums.account_id','id');
 		// $account_model_j->addField('DueDate');
