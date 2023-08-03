@@ -69,11 +69,12 @@ class page_reports_telecallerperformance extends Page {
 				$transaction_join = $transaction_row_model->join('transactions','transaction_id');
 				$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
 				$transaction_type_join->addField('transaction_type_name','name');
-				$transaction_row_model->addCondition('transaction_type_name',TRA_OTHER_AMOUNT_RECEIVED);
+				// $transaction_row_model->addCondition('transaction_type_name',TRA_OTHER_AMOUNT_RECEIVED);
+				$transaction_row_model->addCondition('transaction_type','<>',[TRA_PENALTY_AMOUNT_RECEIVED, TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT]);
 				$transaction_row_model
 					->addCondition('account_id',$m->getElement('account_id'))
-					->addCondition($q->expr('[0] > GREATEST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('from_date'),$this->app->previousDate($from_date)]))
-					->addCondition($q->expr('[0] < LEAST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('to_date'),$this->app->nextDate($to_date)]))
+					->addCondition($q->expr('[0] >= GREATEST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('from_date'),$from_date]))
+					->addCondition($q->expr('[0] <= LEAST([1],"[2]")',[$transaction_row_model->getElement('created_at'),$m->getElement('to_date'),$to_date]))
 					;
 				return $transaction_row_model->sum('amountCr');
 			})->type('money');
