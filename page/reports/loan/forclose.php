@@ -46,6 +46,7 @@ class page_reports_loan_forclose extends Page {
 		$account_model->addExpression('interest_rate')->set($account_model->refSQL('scheme_id')->fieldQuery('Interest'));
 		$account_model->addExpression('interest_rate_for_time_over')->set("18");
 		$account_model->addExpression('premium_count')->set($account_model->refSQL('Premium')->count());
+		$account_model->addExpression('premium_amount')->set($account_model->refSQL('Premium')->fieldQuery('Amount'));
 		$account_model->addExpression('PaneltyCharged')->set($account_model->refSQL('Premium')->sum('PaneltyCharged'));
 		$account_model->addExpression('uncounted_panelty_days')->set(function ($m, $q) {
 			return $q->expr('DATEDIFF("[0]",[1]) - 1', array($m->api->today, $m->getElement('daily'))); //$account_model->refSQL('Premium')->sum('PaneltyCharged'));
@@ -165,7 +166,7 @@ class page_reports_loan_forclose extends Page {
 		$account_model->addExpression('AmountCreditedPenalty')->set($account_model->refSQL('TransactionRow')->addCondition('transaction_type', TRA_PENALTY_AMOUNT_RECEIVED)->sum('amountCr'));
 
 		$grid->addSno();
-		$grid->setModel($account_model, array('AccountNumber', 'member','first_premium_date', 'last_premium_date','dealer','interest_rate','Amount','other_charges','other_received','remaning_other_amount','gst_amount_dr','gst_amount_cr','gst_due', 'current_month_premium_date','premium_count', 'daily', 'uncounted_panelty_days', 'loan_panelty_per_day', 'PaneltyCharged', 'AmountCreditedEMI', 'AmountCreditedPenalty', 'AmountCreditedOther', 'AmountCreditedTotal'));
+		$grid->setModel($account_model, array('AccountNumber', 'member','first_premium_date', 'last_premium_date','dealer','interest_rate','Amount','other_charges','other_received','remaning_other_amount','gst_amount_dr','gst_amount_cr','gst_due', 'current_month_premium_date','premium_count','premium_amount', 'daily', 'uncounted_panelty_days', 'loan_panelty_per_day', 'PaneltyCharged', 'AmountCreditedEMI','remaining_EMI_amount', 'AmountCreditedPenalty', 'AmountCreditedOther', 'AmountCreditedTotal'));
 
 		$grid->addMethod('format_total_panalty', function ($g, $f) {
 			$g->current_row[$f] = $g->model['PaneltyCharged'] + $g->model['uncounted_panelty_days'] * $g->model['loan_panelty_per_day'];
@@ -183,6 +184,29 @@ class page_reports_loan_forclose extends Page {
 		});
 
 		$grid->addMethod('format_monthly_interest', function ($g, $f) {
+			// $first_premium = new MyDateTime($g->model['first_premium_date']);
+			// $today_date = $g->api->today;
+			// $today = new MyDateTime(
+			// 	strtotime($today_date) < strtotime($g->model['last_premium_date']) ?
+			// 	$today_date : $g->model['last_premium_date']
+			// );
+			// $interval = $today->diff($first_premium);
+			// $month = $interval->m + ($interval->y * 12);
+			// $months = $month + 1;
+
+			// $g->interests_for_months = $months;
+
+			// $g->monthly_interest = round(($g->model['Amount'] * ($g->model['interest_rate'] / 100) / 12) * ($g->model['premium_count'] + 1) / $g->model['premium_count']);
+			// $g->current_row[$f] = $g->monthly_interest * $g->interests_for_months;
+		});
+
+		$grid->addMethod('format_monthly_interest_amount', function($g,$f){
+			$g->monthly_interest_amount = round($g->model['premium_amount'] * $g->model['premium_count']);
+			// $g->current_row[$f] = $g->model['premium_amount'];
+			$g->current_row[$f] = $g->monthly_interest_amount;
+		});
+
+		$grid->addMethod('format_pre_closer_discount', function ($g, $f) {
 			$first_premium = new MyDateTime($g->model['first_premium_date']);
 			$today_date = $g->api->today;
 			$today = new MyDateTime(
@@ -196,11 +220,11 @@ class page_reports_loan_forclose extends Page {
 			$g->interests_for_months = $months;
 
 			$g->monthly_interest = round(($g->model['Amount'] * ($g->model['interest_rate'] / 100) / 12) * ($g->model['premium_count'] + 1) / $g->model['premium_count']);
-			$g->current_row[$f] = $g->monthly_interest * $g->interests_for_months;
-		});
 
-		$grid->addMethod('format_for_close_charge', function ($g, $f) {
-			$g->forclose_charges = round(($g->model['premium_count'] - $g->interests_for_months) * ($g->monthly_interest * 40 / 100.00));
+			// $g->forclose_charges = round(($g->model['premium_count'] - $g->interests_for_months) * ($g->monthly_interest * 40 / 100.00));
+			$g->forclose_charges = round(($g->model['premium_count'] - $g->interests_for_months) * ($g->monthly_interest * 60 / 100.00));
+			$g->forclose_charges = 0 - $g->forclose_charges;
+			// $g->current_row[$f] = $g->monthly_interest;
 			$g->current_row[$f] = $g->forclose_charges;
 		});
 
@@ -210,6 +234,12 @@ class page_reports_loan_forclose extends Page {
 
 		$grid->addMethod('format_legal_charge', function ($g, $f) {
 			$g->current_row[$f] = $g->model->ref('TransactionRow', 'model')->addCondition('transaction_type', TRA_LEGAL_CHARGE_RECEIVED)->sum('amountDr')->getOne();
+		});
+
+		$grid->addMethod('format_remaining_EMI_amount', function ($g, $f) {
+			$c = $g->current_row;
+			// $g->current_row[$f] = $g->model['Amount'] + $c['monthly_interest'] + $c['total_panalty']+ $c['other_charges'] + $g->model['gst_amount_dr'] + $c['for_close_charge'] + $c['time_over_charge'];
+			$g->current_row[$f] = $c['monthly_interest_amount'] - $c['AmountCreditedEMI'];
 		});
 
 		// $grid->addMethod('format_other_charge', function ($g, $f) {
@@ -229,10 +259,12 @@ class page_reports_loan_forclose extends Page {
 			$g->time_over_charge = round(($bal['Dr'] - $bal['Cr']) * (18 / 100) / 365 * $days['days_total']);
 			$g->current_row[$f] = $g->time_over_charge;
 		});
+		
 
 		$grid->addMethod('format_AmountDebitedTotal', function ($g, $f) {
 			$c = $g->current_row;
-			$g->current_row[$f] = $g->model['Amount'] + $c['monthly_interest'] + $c['total_panalty']+ $c['other_charges'] + $g->model['gst_amount_dr'] + $c['for_close_charge'] + $c['time_over_charge'];
+			// $g->current_row[$f] = $g->model['Amount'] + $c['monthly_interest'] + $c['total_panalty']+ $c['other_charges'] + $g->model['gst_amount_dr'] + $c['for_close_charge'] + $c['time_over_charge'];
+			$g->current_row[$f] = $c['monthly_interest_amount'] + $c['total_panalty']+ $c['other_charges'] + $g->model['gst_amount_dr'] + $c['pre_closer_discount'] + $c['time_over_charge'];
 		});
 
 		$grid->addMethod('format_AmountCreditedTotal', function ($g, $f) {
@@ -251,11 +283,13 @@ class page_reports_loan_forclose extends Page {
 		$grid->addColumn('total_panalty', 'total_panalty');
 		$grid->addColumn('monthly_interest_months', 'monthly_interest_months');
 		$grid->addColumn('monthly_interest', 'monthly_interest');
+		$grid->addColumn('monthly_interest_amount', 'monthly_interest_amount');
+		$grid->addColumn('remaining_EMI_amount', 'remaining_EMI_amount');
 		$grid->addColumn('remaining_panelty', 'remaining_panelty');
 		// $grid->addColumn('visit_charge', 'visit_charge');
 		// $grid->addColumn('legal_charge', 'legal_charge');
 		// $grid->addColumn('other_charge', 'other_charge');
-		$grid->addColumn('for_close_charge', 'for_close_charge');
+		$grid->addColumn('pre_closer_discount', 'pre_closer_discount');
 		$grid->addColumn('time_over_charge', 'time_over_charge');
 		$grid->addColumn('for_close_amount', 'for_close_amount');
 		$grid->addColumn('AmountCreditedTotal', 'AmountCreditedTotal');
@@ -265,25 +299,29 @@ class page_reports_loan_forclose extends Page {
 		$grid->addOrder()
 			->move('interest_rate','before','Amount')
 			->move('monthly_interest','after','Amount')
-			->move('total_panalty','after','monthly_interest')
+			->move('monthly_interest_amount','after','monthly_interest')
+			->move('AmountCreditedEMI','after','monthly_interest_amount')
+			->move('remaining_EMI_amount','after','AmountCreditedEMI')
+			->move('total_panalty','after','remaining_EMI_amount')
 			->move('AmountCreditedPenalty','after','total_panalty')
 			->move('remaining_panelty','after','AmountCreditedPenalty')
-			->move('for_close_charge','after','gst_due')
-			->move('time_over_charge','after','for_close_charge')
-			->move('AmountCreditedEMI','after','time_over_charge')
-			->move('AmountDebitedTotal','after','AmountCreditedEMI')
+			->move('pre_closer_discount','after','gst_due')
+			->move('time_over_charge','after','pre_closer_discount')
+			->move('AmountDebitedTotal','after','time_over_charge')
 			->move('AmountCreditedTotal','after','AmountDebitedTotal')
 			->move('for_close_amount','after','AmountCreditedTotal')
 			->now();
 
 		$grid->removeColumn('current_month_premium_date');
 		$grid->removeColumn('premium_count');
+		$grid->removeColumn('premium_amount');
 		$grid->removeColumn('daily');
 		$grid->removeColumn('daily');
 		$grid->removeColumn('uncounted_panelty_days');
 		$grid->removeColumn('loan_panelty_per_day');
 		$grid->removeColumn('PaneltyCharged');
 		$grid->removeColumn('monthly_interest_months');
+		$grid->removeColumn('monthly_interest');
 
 		$grid->addFormatter('member', 'wrap');
 
