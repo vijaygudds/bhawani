@@ -206,6 +206,22 @@ class page_reports_loan_forclose extends Page {
 			$g->current_row[$f] = $g->monthly_interest_amount;
 		});
 
+		$grid->addMethod('format_for_close_charge', function ($g, $f) {
+			$first_premium = new MyDateTime($g->model['first_premium_date']);
+			$today_date = $g->api->today;
+			$today = new MyDateTime(
+				strtotime($today_date) < strtotime($g->model['last_premium_date']) ?
+				$today_date : $g->model['last_premium_date']
+			);
+			$interval = $today->diff($first_premium);
+			$month = $interval->m + ($interval->y * 12);
+			$months = $month + 1;
+
+			$g->interests_for_months = $months;
+			$g->monthly_interest = round(($g->model['Amount'] * ($g->model['interest_rate'] / 100) / 12) * ($g->model['premium_count'] + 1) / $g->model['premium_count']);
+			$g->forclose_charges = round(($g->model['premium_count'] - $g->interests_for_months) * ($g->monthly_interest * 40 / 100.00));
+			$g->current_row[$f] = $g->forclose_charges;
+		});
 		$grid->addMethod('format_pre_closer_discount', function ($g, $f) {
 			$first_premium = new MyDateTime($g->model['first_premium_date']);
 			$today_date = $g->api->today;
@@ -221,7 +237,6 @@ class page_reports_loan_forclose extends Page {
 
 			$g->monthly_interest = round(($g->model['Amount'] * ($g->model['interest_rate'] / 100) / 12) * ($g->model['premium_count'] + 1) / $g->model['premium_count']);
 
-			// $g->forclose_charges = round(($g->model['premium_count'] - $g->interests_for_months) * ($g->monthly_interest * 40 / 100.00));
 			$g->forclose_charges = round(($g->model['premium_count'] - $g->interests_for_months) * ($g->monthly_interest * 60 / 100.00));
 			$g->forclose_charges = 0 - $g->forclose_charges;
 			// $g->current_row[$f] = $g->monthly_interest;
@@ -289,6 +304,7 @@ class page_reports_loan_forclose extends Page {
 		// $grid->addColumn('visit_charge', 'visit_charge');
 		// $grid->addColumn('legal_charge', 'legal_charge');
 		// $grid->addColumn('other_charge', 'other_charge');
+		$grid->addColumn('for_close_charge', 'for_close_charge');
 		$grid->addColumn('pre_closer_discount', 'pre_closer_discount');
 		$grid->addColumn('time_over_charge', 'time_over_charge');
 		$grid->addColumn('for_close_amount', 'for_close_amount');
@@ -305,7 +321,8 @@ class page_reports_loan_forclose extends Page {
 			->move('total_panalty','after','remaining_EMI_amount')
 			->move('AmountCreditedPenalty','after','total_panalty')
 			->move('remaining_panelty','after','AmountCreditedPenalty')
-			->move('pre_closer_discount','after','gst_due')
+			->move('for_close_charge','after','gst_due')
+			->move('pre_closer_discount','after','for_close_charge')
 			->move('time_over_charge','after','pre_closer_discount')
 			->move('AmountDebitedTotal','after','time_over_charge')
 			->move('AmountCreditedTotal','after','AmountDebitedTotal')
