@@ -51,13 +51,29 @@ class page_reports_deposit_duestogive extends Page {
 		$member_join->addField('PhoneNos');
 		$member_join->addField('AdharNumber');
 		$member_join->addField('PermanentAddress');
+		$member_join->addField('bankbranch_a_id');
+		$member_join->addField('bank_account_number_1');
 		
 		$agent_join=$account->leftJoin('agents','agent_id');
 		$agen_member_join=$agent_join->leftJoin('members','member_id');
 		$agen_member_join->addField('agent_name','name');
 		$agen_member_join->addField('agent_phoneno','PhoneNos');
 
+
+		$account->addExpression('bank_branch_id')->set(function($m,$q){
+			return $member = $m->add('Model_Member')->addCondition('id',$m->getElement('member_id'))->fieldQuery('bankbranch_a_id');
+		});
+		$account->addExpression('bank_name')->set(function($m,$q){
+			return $bank_branch = $m->add('Model_BankBranches')->addCondition('id',$m->getElement('bank_branch_id'))->fieldQuery('bank');
+		});
+		$account->addExpression('bank_branch')->set(function($m,$q){
+			return $bank_branch = $m->add('Model_BankBranches')->addCondition('id',$m->getElement('bank_branch_id'))->fieldQuery('name');
+		});
+		$account->addExpression('bank_IFSC')->set(function($m,$q){
+			return $bank_branch = $m->add('Model_BankBranches')->addCondition('id',$m->getElement('bank_branch_id'))->fieldQuery('IFSC');
+		});
 		
+
 		$account->addExpression('Loan_AccountNumber')->set(function($m,$q){
 			$loan_m = $m->add('Model_Account',['table_alias'=>'loan_acc']);
 			$loan_m->addCondition('LoanAgainstAccount_id',$q->getField('id'));
@@ -102,7 +118,7 @@ class page_reports_deposit_duestogive extends Page {
 		$account->addExpression('agent_mo_id')->set($account->refSQL('agent_id')->fieldQuery('mo_id'));
 		$account->addExpression('agent_mo_name')->set($account->refSQL('agent_id')->fieldQuery('mo'))->caption('Mo');
 
-		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','AdharNumber','paid_EMI','due_premium_count','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type');
+		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','AdharNumber','paid_EMI','due_premium_count','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type','bank_name','bank_branch','bank_IFSC','bank_account_number_1');
 
 
 		if($_GET['filter']){			

@@ -187,6 +187,18 @@ class page_reports_general_periodical extends Page {
 					}
 
 				}
+				$account_model->addExpression('bank_branch_id')->set(function($m,$q){
+					return $member = $m->add('Model_Member')->addCondition('id',$m->getElement('member_id'))->fieldQuery('bankbranch_a_id');
+				});
+				$account_model->addExpression('bank_name')->set(function($m,$q){
+					return $bank_branch = $m->add('Model_BankBranches')->addCondition('id',$m->getElement('bank_branch_id'))->fieldQuery('bank');
+				});
+				$account_model->addExpression('bank_branch')->set(function($m,$q){
+					return $bank_branch = $m->add('Model_BankBranches')->addCondition('id',$m->getElement('bank_branch_id'))->fieldQuery('name');
+				});
+				$account_model->addExpression('bank_IFSC')->set(function($m,$q){
+					return $bank_branch = $m->add('Model_BankBranches')->addCondition('id',$m->getElement('bank_branch_id'))->fieldQuery('IFSC');
+				});				
 
 				$account_model->addExpression('sm_no')->set(function($m,$q){
 					$sm_a = $m->add('Model_Account',array('table_alias'=>'sm_a'));
@@ -196,6 +208,7 @@ class page_reports_general_periodical extends Page {
 					return $sm_a->fieldQuery('AccountNumber');
 				});
 
+				$account_model->addExpression('bank_account_number')->set($account_model->refSQL('member_id')->fieldQuery('bank_account_number_1'));
 				$account_model->addExpression('pan_no')->set($account_model->refSQL('member_id')->fieldQuery('PanNo'));
 				$account_model->addExpression('adhaar_no')->set($account_model->refSQL('member_id')->fieldQuery('AdharNumber'));
 				$account_model->addExpression('father_name')->set($account_model->refSQL('member_id')->fieldQuery('FatherName'));
@@ -207,7 +220,7 @@ class page_reports_general_periodical extends Page {
 				
 				$grid = $p->add('Grid_AccountsBase');
 				$grid->addSno();
-				$grid->setModel($account_model,array('member_no','ActiveStatus','sm_no','created_at','AccountNumber','scheme','Amount','pan_no','adhaar_no','member','father_name','address','phone_no','agent','dealer','mo','team','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee','repayment_mode'));
+				$grid->setModel($account_model,array('member_no','ActiveStatus','sm_no','created_at','AccountNumber','scheme','Amount','pan_no','adhaar_no','member','father_name','address','phone_no','agent','dealer','mo','team','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee','repayment_mode','bank_name','bank_branch','bank_IFSC','bank_account_number'));
 				$grid->addFormatter('agent','Wrap');
 				$grid->addFormatter('agent_saving_acc','Wrap');
 				$grid->addFormatter('team','Wrap');
