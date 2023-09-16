@@ -118,7 +118,7 @@ class page_reports_deposit_duestogive extends Page {
 		$account->addExpression('agent_mo_id')->set($account->refSQL('agent_id')->fieldQuery('mo_id'));
 		$account->addExpression('agent_mo_name')->set($account->refSQL('agent_id')->fieldQuery('mo'))->caption('Mo');
 
-		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','AdharNumber','paid_EMI','due_premium_count','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type','bank_name','bank_branch','bank_IFSC','bank_account_number_1');
+		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','AdharNumber','paid_EMI','due_premium_count','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type','bank_account_number_1','bank_name','bank_IFSC','bank_branch');
 
 
 		if($_GET['filter']){			
