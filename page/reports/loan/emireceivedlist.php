@@ -77,11 +77,18 @@ class page_reports_loan_emireceivedlist extends Page {
 
 		$transaction_row_model->addExpression('overdue_premium_before')->set(function($m,$q)use($from_date){
 			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_count_table'));
-			$dpc_m->addCondition('DueDate','<',$m->api->nextDate($from_date)?:'1970-01-01');
-			$dpc_m->addCondition('PaidOn','>',$m->api->nextDate($from_date));
+			// $dpc_m->addCondition('DueDate','<',$m->api->nextDate($from_date)?:'1970-01-01');
+			// $dpc_m->addCondition('PaidOn','>',$m->api->nextDate($from_date));
 			$dpc_m->addCondition('account_id',$q->getField('account_id'));
 			// $dpc_m->_dsql()->where("(PaidOn is null OR PaidOn >= '". ($m->api->nextDate($till_date)) ."')");
 			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			$dpc_m->addCondition(
+			$dpc_m->dsql()->andExpr()
+				->where('DueDate','<',$m->api->nextDate($from_date)?:'1970-01-01')
+				->where("(PaidOn is null OR PaidOn >= '". ($m->api->nextDate($from_date)) ."')")
+				// ->where('PaidOn','>',$m->api->nextDate($from_date))
+				// ->where('PaidOn','NULL')
+			);
 			return $dpc_m->count();
 		})->sortable(true);
 
