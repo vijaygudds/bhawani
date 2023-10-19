@@ -7,6 +7,7 @@ class page_reports_agent_topten extends Page {
 		parent::init();
 		
 		$form=$this->add('Form',null,null,['form/horizontal']);
+		$form->addField('autocomplete/Basic','agent')->setModel('Agent');
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
 		$form->addField('Dropdown','report_type')->validateNotNull()->setEmptyText("Please Select")->setValueList(['collection'=>"Collection Wise",'account'=>'Account Wise']);
@@ -36,6 +37,9 @@ class page_reports_agent_topten extends Page {
 			$model = $this->add('Model_Agent');
 			$fields = ['name'];
 
+			if($this->app->stickyGET('agent')){
+				$model->addCondition('id',$this->app->stickyGET('agent'));
+			}
 			if($scheme_id OR $duration){
 				$fields = ['name','scheme_id','MaturityPeriod','SchemeType'];
 
@@ -199,7 +203,7 @@ class page_reports_agent_topten extends Page {
 
 			if($form['duration_unit'] == "Day" && $form['report_type'] == "collection") $form->displayError('report_type','must be account wise');
 
-			$view->js()->reload(array('report_type'=>$form['report_type'],'branch'=>$form['branch'], 'to_date'=>$form['to_date']?:'0','from_date'=>$form['from_date']?:'0','scheme'=>$form['scheme'],'duration'=>$form['duration'],'duration_unit'=>$form['duration_unit'],'filter'=>1))->execute();
+			$view->js()->reload(array('report_type'=>$form['report_type'],'agent'=>$form['agent'],'branch'=>$form['branch'], 'to_date'=>$form['to_date']?:'0','from_date'=>$form['from_date']?:'0','scheme'=>$form['scheme'],'duration'=>$form['duration'],'duration_unit'=>$form['duration_unit'],'filter'=>1))->execute();
 		}
 	}
 }
