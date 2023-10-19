@@ -77,7 +77,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 		$transaction_row_model->addExpression('overdue_premium_before')->set(function($m,$q)use($from_date){
 			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_count_table'));
-			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+			$dpc_m->addCondition('DueDate','<',$m->api->nextDate($from_date)?:'1970-01-01');
 			$dpc_m->addCondition('PaidOn','>',$m->api->nextDate($from_date));
 			$dpc_m->addCondition('account_id',$q->getField('account_id'));
 			// $dpc_m->_dsql()->where("(PaidOn is null OR PaidOn >= '". ($m->api->nextDate($till_date)) ."')");
