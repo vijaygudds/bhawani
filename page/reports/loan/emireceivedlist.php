@@ -5,8 +5,12 @@ class page_reports_loan_emireceivedlist extends Page {
 	function init(){
 		parent::init();
 		$till_date="";
+		$from_date="";
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
+		}
+		if($_GET['from_date']){
+			$from_date=$_GET['from_date'];
 		}
 
 		$form=$this->add('Form');
@@ -62,11 +66,21 @@ class page_reports_loan_emireceivedlist extends Page {
 		$transaction_row_model->addCondition('SchemeType','Loan');
 
 		$transaction_row_model->addExpression('due_premium_count')->set(function($m,$q)use($till_date){
-			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_count_table'));
+			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'overdue_premium_count_before_from_date'));
 			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
 			$dpc_m->addCondition('DueDate','<',$m->api->nextDate($till_date));
 			$dpc_m->addCondition('account_id',$q->getField('account_id'));
 			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn >= '". ($m->api->nextDate($till_date)) ."')");
+			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			return $dpc_m->count();
+		})->sortable(true);
+
+		$transaction_row_model->addExpression('overdue_premium_before')->set(function($m,$q)use($from_date){
+			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_count_table'));
+			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+			$dpc_m->addCondition('PaidOn','>',$m->api->nextDate($from_date));
+			$dpc_m->addCondition('account_id',$q->getField('account_id'));
+			// $dpc_m->_dsql()->where("(PaidOn is null OR PaidOn >= '". ($m->api->nextDate($till_date)) ."')");
 			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
 			return $dpc_m->count();
 		})->sortable(true);
@@ -147,7 +161,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_address','member_landmark','FatherName','PhoneNos','amountCr','due_premium_count','Narration','created_at','dealer_name','is_in_legal','is_given_for_legal_process','legal_process_given_date','legal_filing_date'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_address','member_landmark','FatherName','PhoneNos','amountCr','due_premium_count','overdue_premium_before','Narration','created_at','dealer_name','is_in_legal','is_given_for_legal_process','legal_process_given_date','legal_filing_date'));
 
 		// $grid->addHook('formatRow',function($g){
 		// 	// $this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));			
