@@ -61,9 +61,9 @@ class page_accounts_Loan extends Page {
 			if($form['sm_amount'] && !is_numeric($form['sm_amount']))
 				$form->displayError('sm_amount',"Must be a number");
 
-			if(!$form['other_account'] && $form['other_account_cr_amount']){
-				$form->displayError('other_account',"Must be filled");
-			}
+			// if(!$form['other_account'] && $form['other_account_cr_amount']){
+			// 	$form->displayError('other_account',"Must be filled");
+			// }
 
 			if(!$form['other_account_cr_amount'] && $form['other_account']){
 				$form->displayError('other_account_cr_amount',"please fill other_account_cr_amount");
@@ -147,11 +147,11 @@ class page_accounts_Loan extends Page {
 			$loan_from_account_field->setModel($loan_from_account_model);
 			$account_loan_model->getElement('ModeOfOperation')->system(true);
 
-			$crud->form->addField('sm_amount');
-			$other_account_autocomplete = $crud->form->addField('autocomplete/Basic','other_account');
-			$other_account_autocomplete->setModel('Model_Account_Default');
+			$crud->form->addField('sm_amount',null,'Insurance Amount');
+			// $other_account_autocomplete = $crud->form->addField('autocomplete/Basic','other_account');
+			// $other_account_autocomplete->setModel('Model_Account_Default');
 			// $field_cr_percentage =  $crud->form->addField('other_account_cr_amount_percentage')->setFieldHint('value in %, put 10,15 etc');
-			$field_cr_amount = $crud->form->addField('other_account_cr_amount');
+			$field_cr_amount = $crud->form->addField('other_account_cr_amount',null,'File Charge  Amount');
 		}
 		
 
@@ -177,11 +177,11 @@ class page_accounts_Loan extends Page {
 			$sm_amount = $extra_info_sm_amount['sm_amount'];
 			$crud->form->getElement('sm_amount')->set($sm_amount);
 
-			$other_account_filled = $extra_info_sm_amount['other_account'];
+			// $other_account_filled = $extra_info_sm_amount['other_account'];
 			$other_account_filled_cr_amount = $extra_info_sm_amount['other_account_cr_amount'];
 			// $other_account_cr_amount_percentage = $extra_info_sm_amount['other_account_cr_amount_percentage'];
 			
-			$crud->form->getElement('other_account')->set($other_account_filled);
+			// $crud->form->getElement('other_account')->set($other_account_filled);
 			$crud->form->getElement('other_account_cr_amount')->set($other_account_filled_cr_amount);
 			// $crud->form->getElement('other_account_cr_amount_percentage')->set($other_account_cr_amount_percentage);
 
@@ -255,9 +255,9 @@ class page_accounts_Loan extends Page {
 		if($crud->isEditing()){
 			$o
 				->move('sm_amount','after','Amount')
-				->move('other_account','after','sm_amount')
-				->move($other_account_autocomplete->other_field,'after','other_account')
-				->move('other_account_cr_amount','after','other_account')
+				// ->move('other_account','after','sm_amount')
+				// ->move($other_account_autocomplete->other_field,'after','other_account')
+				->move('other_account_cr_amount','after','sm_amount')
 				// ->move('other_account_cr_amount_percentage','after','other_account')
 				->now();
 		}
