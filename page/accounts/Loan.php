@@ -290,10 +290,10 @@ class page_accounts_Loan extends Page {
 			});
 
 			// Not editing
-			$crud->grid->addMethod('format_other_account',function($g,$f){
-				$extra_info = json_decode($g->model['extra_info']);
-				$g->current_row[$f]= $this->add('Model_Account')->tryLoad(isset($extra_info->other_account)?$extra_info->other_account:'0')->get('AccountNumber');
-			});
+			// $crud->grid->addMethod('format_other_account',function($g,$f){
+			// 	$extra_info = json_decode($g->model['extra_info']);
+			// 	$g->current_row[$f]= $this->add('Model_Account')->tryLoad(isset($extra_info->other_account)?$extra_info->other_account:'0')->get('AccountNumber');
+			// });
 
 			// Not editing
 			// $crud->grid->addMethod('format_other_account_cr_amount',function($g,$f){
@@ -315,7 +315,7 @@ class page_accounts_Loan extends Page {
 			// $crud->grid->addColumn('sm_amount','sm_amount');
 			$crud->grid->addColumn('insurance_amount','insurance_amount');
 			$crud->grid->addColumn('filecharge_amount','filecharge_amount');
-			$crud->grid->addColumn('other_account','other_account');
+			// $crud->grid->addColumn('other_account','other_account');
 			// $crud->grid->addColumn('other_account_cr_amount_percentage','other_account_cr_amount_percentage');
 			// $crud->grid->addColumn('other_account_cr_amount','other_account_cr_amount');
 

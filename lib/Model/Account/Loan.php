@@ -218,7 +218,9 @@ class Model_Account_Loan extends Model_Account{
 		$loan_from_other_account = $this->add('Model_Account')->load($from_account);
 
 		$transaction->addDebitAccount($this, $this['Amount']);
-		$transaction->addCreditAccount($this['branch_code'] . SP . PROCESSING_FEE_RECEIVED . SP. $this['scheme_name'], $ProcessingFees);
+		if($otherValues['account_type'] != 'Loan Against Deposit'){
+			$transaction->addCreditAccount($this['branch_code'] . SP . PROCESSING_FEE_RECEIVED . SP. $this['scheme_name'], $ProcessingFees);
+		}
 		if($sm_amount){
 			$transaction->addCreditAccount($account, $sm_amount);
 			$AccountCredit = $AccountCredit - $sm_amount;
