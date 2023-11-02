@@ -280,7 +280,11 @@ class page_accounts_Loan extends Page {
 			});	
 
 			// Not editing
-			$crud->grid->addMethod('format_sm_amount',function($g,$f){
+			// $crud->grid->addMethod('format_sm_amount',function($g,$f){
+			// 	$extra_info = json_decode($g->model['extra_info']);
+			// 	$g->current_row[$f]= isset($extra_info->sm_amount)?$extra_info->sm_amount:'';
+			// });
+			$crud->grid->addMethod('format_insurance_amount',function($g,$f){
 				$extra_info = json_decode($g->model['extra_info']);
 				$g->current_row[$f]= isset($extra_info->sm_amount)?$extra_info->sm_amount:'';
 			});
@@ -292,7 +296,11 @@ class page_accounts_Loan extends Page {
 			});
 
 			// Not editing
-			$crud->grid->addMethod('format_other_account_cr_amount',function($g,$f){
+			// $crud->grid->addMethod('format_other_account_cr_amount',function($g,$f){
+			// 	$extra_info = json_decode($g->model['extra_info']);
+			// 	$g->current_row[$f]= isset($extra_info->other_account_cr_amount)?$extra_info->other_account_cr_amount:'';
+			// });
+			$crud->grid->addMethod('format_filecharge_amount',function($g,$f){
 				$extra_info = json_decode($g->model['extra_info']);
 				$g->current_row[$f]= isset($extra_info->other_account_cr_amount)?$extra_info->other_account_cr_amount:'';
 			});	
@@ -304,17 +312,21 @@ class page_accounts_Loan extends Page {
 			// });		
 
 			$crud->grid->addColumn('loan_from_account','loan_from_account');
-			$crud->grid->addColumn('sm_amount','sm_amount');
+			// $crud->grid->addColumn('sm_amount','sm_amount');
+			$crud->grid->addColumn('insurance_amount','insurance_amount');
+			$crud->grid->addColumn('filecharge_amount','filecharge_amount');
 			$crud->grid->addColumn('other_account','other_account');
 			// $crud->grid->addColumn('other_account_cr_amount_percentage','other_account_cr_amount_percentage');
-			$crud->grid->addColumn('other_account_cr_amount','other_account_cr_amount');
+			// $crud->grid->addColumn('other_account_cr_amount','other_account_cr_amount');
 
 			$ox=$crud->grid->addOrder();
 			$ox->move('loan_from_account','after','dealer')
-				->move('sm_amount','after','Amount')
-				->move('other_account','after','sm_amount')
+				// ->move('sm_amount','after','Amount')
+				->move('insurance_amount','after','Amount')
+				// ->move('other_account','after','sm_amount')
 				// ->move('other_account_cr_amount_percentage','after','other_account')
-				->move('other_account_cr_amount','after','other_account');
+				// ->move('other_account_cr_amount','after','insurance_amount');
+				->move('filecharge_amount','after','insurance_amount');
 			if($this->api->auth->model['AccessLevel']>=80)
 				$ox->move('action','first');
 			$ox->now();
