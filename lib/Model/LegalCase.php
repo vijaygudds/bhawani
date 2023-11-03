@@ -16,6 +16,7 @@ class Model_LegalCase extends Model_Table {
 		$this->addField('case_on')->enum(['Owner','Guarantor']);
 		$this->addField('file_verified_by');
 		$this->addField('advocate');
+		$this->addField('amount');
 		$this->addField('remarks');
 
 		$this->hasMany('LegalCaseHearing','legalcase_id');
