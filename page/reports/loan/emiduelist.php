@@ -51,7 +51,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
+		$form->addField('dropdown','report_type')->setValueList(array('nodues'=>'0 EMI DUE','duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
 		$form->addField('Number','time_collapse_nonpaid_months');
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','hl'=>'HL','other'=>'Other'));
 		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
@@ -88,7 +88,7 @@ class page_reports_loan_emiduelist extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','current_ro','created_at','maturity_date','last_transaction_date','Amount','due_date','scheme','current_balance','member_name','FatherName','CurrentAddress','landmark','tehsil','district','city','pin_code','state','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_father','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','received_panelty','remaning_panelty','other_charges','other_received','remaning_other_amount','gst_amount_dr','gst_amount_cr','gst_due','total','bike_surrendered_by','bike_surrendered_on','bike_returned_on','last_premium_date','interest_rate');
+		$grid_column_array = array('AccountNumber','current_ro','created_at','maturity_date','last_transaction_date','Amount','due_date','scheme','current_balance','legal_case_remark','member_name','FatherName','CurrentAddress','landmark','tehsil','district','city','pin_code','state','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_father','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','received_panelty','remaning_panelty','other_charges','other_received','remaning_other_amount','gst_amount_dr','gst_amount_cr','gst_due','total','bike_surrendered_by','bike_surrendered_on','bike_returned_on','last_premium_date','interest_rate');
 
 		// $account_model->addExpression('loan_remark',function($m,$q){
 
@@ -343,6 +343,11 @@ class page_reports_loan_emiduelist extends Page {
 				// don't know why was this condition was made by devendra sir, but now as per again call this is commented and he says now everything is okay
 			//if($_GET['bike_surrendered']==='include' AND $_GET['legal_accounts']==='include'){
 				switch ($_GET['report_type']) {
+					case 'nodues':
+						$account_model->addCondition('due_premium_count','=',0);
+						//$account_model->addCondition('due_premium_count','<=',2);
+						$account_model->addCondition('last_premium','>=',$to_date);
+						break;
 					case 'duelist':
 						$account_model->addCondition('due_premium_count','>',0);
 						$account_model->addCondition('due_premium_count','<=',2);
@@ -556,6 +561,7 @@ class page_reports_loan_emiduelist extends Page {
 			$account_model->addCondition('id',-1);
 		}
 		$account_model->addExpression('last_premium_date')->set($account_model->refSQL('Premium')->setLimit(1)->setOrder('DueDate', 'desc')->fieldQuery('DueDate'));
+		$account_model->addExpression('legal_case_remark')->set($account_model->refSQL('LegalCase')->setLimit(1)->setOrder('id', 'desc')->fieldQuery('remarks'));
 
 		$account_model->addExpression('interest_rate')->set($account_model->refSQL('scheme_id')->fieldQuery('Interest'));
 
