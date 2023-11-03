@@ -87,7 +87,13 @@ class page_reports_loan_gstreceivedlist extends Page {
 				$transaction_type = $tra_array[$_GET['transaction_type']][0];
 				$transaction_row_model->addCondition('memorandum_type',$transaction_type);
 			}else{
-				$transaction_row_model->addCondition('memorandum_type',$model_memo_tran->getTransactionType());
+				$transaction_row_model->addCondition(
+					$transaction_row_model->dsql()->orExpr()
+						->where('memorandum_type',$model_memo_tran->getTransactionType())
+						->where('memorandum_type','like','legal_expenses_received')
+				);
+				// $transaction_row_model->addCondition('memorandum_type',$model_memo_tran->getTransactionType());
+				// $transaction_row_model->addCondition('memorandum_type','like','	LEGAL EXPENSES RECEIVED');
 			}
 
 			$this->api->stickyGET('loan_type');
