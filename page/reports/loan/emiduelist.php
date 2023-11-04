@@ -350,7 +350,9 @@ class page_reports_loan_emiduelist extends Page {
 							->where($account_model->getElement('remaning_panelty'),'>',0)
 							->where($account_model->getElement('remaning_other_amount'),'>',0)
 							->where($account_model->getElement('gst_due'),'>',0)
+							->where($account_model->getElement('last_premium'),'>=',$to_date)
 						);
+						// $account_model->addCondition('last_premium','>=',$to_date);
 						break;
 					case 'nodues':
 						$account_model->addCondition('due_premium_count','=',0);
