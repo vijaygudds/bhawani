@@ -33,7 +33,7 @@ class page_reports_loan_dealerwise extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
+		$form->addField('dropdown','report_type')->setValueList(array('ALL'=>'ALL','nodues'=>'0 EMI DUE','duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','hl'=>'HL','other'=>'Other'));
 		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
 		$form->addField('dropdown','bike_surrendered')->setValueList(['include'=>'Include / All','exclude'=>'Exclude','only'=>'Only']);
@@ -130,6 +130,7 @@ class page_reports_loan_dealerwise extends Page {
 			$tr_m->addCondition('account_id',$q->getField('id'));
 			return $tr_m->sum('amountDr');
 		});
+		$account_model->addExpression('current_balance')->set('(CurrentBalanceDr-CurrentBalanceCr)');
 
 		$account_model->addExpression('other_received')->set(function($m,$q){
 			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
@@ -197,6 +198,16 @@ class page_reports_loan_dealerwise extends Page {
 			// done again as per devendra sir bu looking at emidue list condition 
 			// if($_GET['bike_surrendered']==='include' AND $_GET['legal_accounts']==='include'){
 				switch ($_GET['report_type']) {
+					case 'ALL':
+						$account_model->addCondition('due_premium_count','>',0);
+						// $account_model->addCondition('due_premium_count','<=',5);
+						$account_model->addCondition('last_premium','>=',$to_date);
+						break;
+					case 'nodues':
+						$account_model->addCondition('due_premium_count','=',0);
+						//$account_model->addCondition('due_premium_count','<=',2);
+						$account_model->addCondition('last_premium','>=',$to_date);
+						break;
 					case 'duelist':
 						$account_model->addCondition('due_premium_count','>',0);
 						$account_model->addCondition('due_premium_count','<=',2);
@@ -358,10 +369,36 @@ class page_reports_loan_dealerwise extends Page {
 		}else
 			$account_model->addCondition('id',-1);
 
+
+		$account_model->addExpression('gst_amount_cr')->set(function($m,$q){
+			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$memo_amount_cr = $tr_m->sum('amountCr');
+			return $memo_amount_cr;
+		});
+		$account_model->addExpression('gst_amount_dr')->set(function($m,$q){
+			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_dr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$memo_amount_dr = $tr_m->sum('amountDr');
+			return $memo_amount_dr;
+		});
+
+		$account_model->addExpression('gst_due')->set(function($m,$q){
+			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$memo_amount_cr = $tr_m->sum('amountCr');
+			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$memo_amount_dr = $tr_m->sum('amountDr');
+			// $premium_paid = $q->expr('([0]*[1])',[$memo_amount_cr,$m->getElement('emi_amount')]);
+			return $q->expr('([0]-[1])',[$memo_amount_dr,$memo_amount_cr]);
+		});
+
 		$account_model->addExpression('emi_dueamount')->set(function($m,$q){
 			return $q->expr('([0]*[1])',[$m->getElement('due_premium_count'),$m->getElement('emi_amount')]);
 		});
 
+		$account_model->addExpression('legal_case_amount')->set($account_model->refSQL('LegalCase')->setLimit(1)->setOrder('id', 'desc')->fieldQuery('amount'));
 
 		$account_model->addExpression('sum_emi_amount')->set(function($m,$q){
 			return $q->expr('SUM([0])',[$m->getElement('emi_amount')]);
@@ -382,13 +419,28 @@ class page_reports_loan_dealerwise extends Page {
 		$account_model->addExpression('sum_other_received')->set(function($m,$q){
 			return $q->expr('SUM([0])',[$m->getElement('other_received')]);
 		});
-
+		$account_model->addExpression('sum_current_balance')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('current_balance')]);
+		});
+		$account_model->addExpression('sum_legalcase_amount')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('legal_case_amount')]);
+		});
+		$account_model->addExpression('sum_gst_amount_cr')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('gst_amount_cr')]);
+		});
+		$account_model->addExpression('sum_gst_amount_dr')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('gst_amount_cr')]);
+		});
+		$account_model->addExpression('sum_gst_due')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('gst_due')]);
+		});
 		$account_model->addExpression('total')->set(function($m,$q){
-			return $q->expr('IFNULL([sum_emi_due_amount],0) + IFNULL([sum_due_panelty],0) + IFNULL([sum_other_charges],0) - IFNULL([sum_other_received],0)',
+			return $q->expr('IFNULL([sum_emi_due_amount],0) + IFNULL([sum_due_panelty],0) + IFNULL([sum_other_charges],0) + IFNULL([sum_gst_due],0) - IFNULL([sum_other_received],0)',
 			[
 				'sum_emi_due_amount' => $m->getElement('sum_emi_due_amount'),
 				'sum_due_panelty' 	=> $m->getElement('sum_due_panelty'),
 				'sum_other_charges'	=> $m->getElement('sum_other_charges'),
+				'sum_gst_due'	=> $m->getElement('sum_gst_due'),
 				'sum_other_received'	=> $m->getElement('sum_other_received')
 			]);//($m['due_premium_count'] * $m['emi_amount']) +$m['due_panelty']+$m['other_charges']-$m['other_received'];
 		});
@@ -402,7 +454,7 @@ class page_reports_loan_dealerwise extends Page {
 		// $account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
 
-		$grid->setModel($account_model,['dealer','count_accounts','sum_emi_amount','sum_emi_due_amount','sum_due_panelty','sum_other_charges','sum_other_received','total']);
+		$grid->setModel($account_model,['dealer','count_accounts','sum_emi_amount','sum_emi_due_amount','sum_due_panelty','sum_other_charges','sum_gst_amount_cr','sum_gst_amount_dr','sum_gst_due','sum_other_received','total','sum_legalcase_amount','sum_current_balance']);
 
 		if($_GET['filter']){
 			// $grid->addColumn('emidue','emi_dueamount');
@@ -419,7 +471,7 @@ class page_reports_loan_dealerwise extends Page {
 
 		$grid->addPaginator(500);
 		$grid->addSno();
-		$grid->addTotals(array('total','sum_emi_due_amount','sum_due_panelty','sum_other_charges','sum_other_received'));
+		$grid->addTotals(array('total','sum_emi_due_amount','sum_due_panelty','sum_other_charges','sum_gst_amount_cr','sum_gst_amount_dr','sum_gst_due','sum_other_received'));
 		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ,'output_filename'=>$_GET['report_type'].' lilst_as_on '. $to_date.".csv"));
 
 		$grid->removeColumn('last_premium');
