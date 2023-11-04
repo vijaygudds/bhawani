@@ -201,7 +201,7 @@ class page_reports_loan_dealerwise extends Page {
 					case 'ALL':
 						$account_model->addCondition('due_premium_count','>',0);
 						// $account_model->addCondition('due_premium_count','<=',5);
-						$account_model->addCondition('last_premium','>=',$to_date);
+						$account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$to_date)));
 						break;
 					case 'nodues':
 						$account_model->addCondition('due_premium_count','=',0);
@@ -454,7 +454,7 @@ class page_reports_loan_dealerwise extends Page {
 		// $account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
 
-		$grid->setModel($account_model,['dealer','count_accounts','sum_emi_amount','sum_emi_due_amount','sum_due_panelty','sum_other_charges','sum_gst_amount_cr','sum_gst_amount_dr','sum_gst_due','sum_other_received','total','sum_legalcase_amount','sum_current_balance']);
+		$grid->setModel($account_model,['dealer','count_accounts','sum_emi_amount','sum_emi_due_amount','sum_due_panelty','sum_other_charges',/*'sum_gst_amount_cr','sum_gst_amount_dr',*/'sum_gst_due','sum_other_received','total','sum_legalcase_amount','sum_current_balance']);
 
 		if($_GET['filter']){
 			// $grid->addColumn('emidue','emi_dueamount');

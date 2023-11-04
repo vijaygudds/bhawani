@@ -346,7 +346,7 @@ class page_reports_loan_emiduelist extends Page {
 					case 'ALL':
 						$account_model->addCondition('due_premium_count','>',0);
 						// $account_model->addCondition('due_premium_count','<=',5);
-						$account_model->addCondition('last_premium','>=',$to_date);
+						$account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$to_date)));
 						break;
 					case 'nodues':
 						$account_model->addCondition('due_premium_count','=',0);
