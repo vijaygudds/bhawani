@@ -140,6 +140,35 @@ class page_reports_loan_dealerwise extends Page {
 			return $q->expr('([0]-[1])',[$received,$premium_paid]);
 		});
 
+		$account_model->addExpression('other_charges_due')->set(function($m,$q){
+			return $q->expr('([0]-[1])',[$m->getElement('other_charges'),$m->getElement('other_received')]);
+		});
+
+		$account_model->addExpression('gst_amount_cr')->set(function($m,$q){
+			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$memo_amount_cr = $tr_m->sum('amountCr');
+			return $memo_amount_cr;
+		});
+		$account_model->addExpression('gst_amount_dr')->set(function($m,$q){
+			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_dr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$memo_amount_dr = $tr_m->sum('amountDr');
+			return $memo_amount_dr;
+		});
+
+		$account_model->addExpression('gst_due')->set(function($m,$q){
+			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$memo_amount_cr = $tr_m->sum('amountCr');
+			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$memo_amount_dr = $tr_m->sum('amountDr');
+			// $premium_paid = $q->expr('([0]*[1])',[$memo_amount_cr,$m->getElement('emi_amount')]);
+			return $q->expr('([0]-[1])',[$memo_amount_dr,$memo_amount_cr]);
+		});
+		
+
 		$account_model->addExpression('guarantor_name')->set(function($m,$q){
 			$guarantor_m = $m->add('Model_Member',array('table_alias'=>'guarantor_name_q'));
 			$ac_join = $guarantor_m->join('account_guarantors.member_id');
@@ -199,9 +228,18 @@ class page_reports_loan_dealerwise extends Page {
 			// if($_GET['bike_surrendered']==='include' AND $_GET['legal_accounts']==='include'){
 				switch ($_GET['report_type']) {
 					case 'ALL':
-						$account_model->addCondition('due_premium_count','>',0);
-						// $account_model->addCondition('due_premium_count','<=',5);
-						$account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$to_date)));
+
+						$account_model->addCondition(
+							$account_model->dsql()->orExpr()
+							->where($account_model->getElement('due_premium_count'),'>',0)
+							->where($account_model->getElement('due_panelty'),'>',0)
+							->where($account_model->getElement('other_charges_due'),'>',0)
+							->where($account_model->getElement('gst_due'),'>',0)
+						);
+
+						// $account_model->addCondition('due_premium_count','>',0);
+						// // $account_model->addCondition('due_premium_count','<=',5);
+						// $account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$to_date)));
 						break;
 					case 'nodues':
 						$account_model->addCondition('due_premium_count','=',0);
@@ -370,29 +408,7 @@ class page_reports_loan_dealerwise extends Page {
 			$account_model->addCondition('id',-1);
 
 
-		$account_model->addExpression('gst_amount_cr')->set(function($m,$q){
-			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
-			$tr_m->addCondition('account_id',$q->getField('id'));
-			$memo_amount_cr = $tr_m->sum('amountCr');
-			return $memo_amount_cr;
-		});
-		$account_model->addExpression('gst_amount_dr')->set(function($m,$q){
-			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_dr'));
-			$tr_m->addCondition('account_id',$q->getField('id'));
-			$memo_amount_dr = $tr_m->sum('amountDr');
-			return $memo_amount_dr;
-		});
-
-		$account_model->addExpression('gst_due')->set(function($m,$q){
-			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
-			$tr_m->addCondition('account_id',$q->getField('id'));
-			$memo_amount_cr = $tr_m->sum('amountCr');
-			$tr_m = $m->add('Model_Memorandum_TransactionRow',array('table_alias'=>'memo_amount_cr'));
-			$tr_m->addCondition('account_id',$q->getField('id'));
-			$memo_amount_dr = $tr_m->sum('amountDr');
-			// $premium_paid = $q->expr('([0]*[1])',[$memo_amount_cr,$m->getElement('emi_amount')]);
-			return $q->expr('([0]-[1])',[$memo_amount_dr,$memo_amount_cr]);
-		});
+		
 
 		$account_model->addExpression('emi_dueamount')->set(function($m,$q){
 			return $q->expr('([0]*[1])',[$m->getElement('due_premium_count'),$m->getElement('emi_amount')]);
