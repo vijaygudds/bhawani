@@ -40,7 +40,7 @@ class page_reports_general_accountclose extends Page {
 		$account_model->addCondition('CurrentBalanceCr',$account_model->getField('CurrentBalanceDr'));
 
 		$account_model->addExpression('last_transaction_date')->set(function($m,$q){
-			return $m->refSQL('RelatedTransactions')->setOrder('created_at','desc')->setLimit(1)->fieldQuery('created_at');
+			return $m->refSQL('RelatedTransactions')->addCondition('transaction_type','<>','NewMemberRegistrationAmount')->setOrder('created_at','desc')->setLimit(1)->fieldQuery('created_at');
 		})->caption('Last Tr Date');
 		
 		$member_join = $account_model->leftJoin('members','member_id');
