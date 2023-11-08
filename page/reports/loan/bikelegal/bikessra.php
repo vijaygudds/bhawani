@@ -10,6 +10,15 @@ class page_reports_loan_bikelegal_bikessra extends Page {
 		$form->addField('DatePicker','from');
 		$form->addField('DatePicker','to');
 		$form->addField('DropDown','type')->setValueList(['surrender'=>'Surrendered Bikes','returned'=>'Returned Bikes','auctioned'=>'Auctioned Bikes']);
+
+		$document=$this->add('Model_Document');
+		$document->addCondition('LoanAccount',true);
+		$document->addCondition('name','Bike Location');
+		foreach ($document as $junk) {
+			$form->addField('CheckBox','doc_'.$document->id, $document['name']);
+		}
+
+
 		$form->addSubmit('Get List');
 
 		$account_model = $this->add('Model_Account_Loan');
@@ -89,7 +98,10 @@ class page_reports_loan_bikelegal_bikessra extends Page {
 			return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		});
 
+
+
 		$field="";
+		$grid_column_array = array('AccountNumber',$field,'FatherName'.'PermanentAddress','bike_auctioned_on','bike_returned_on','PhoneNos','landmark','tehsil','district','dealer','bike_surrendered_by','total_due');
 		if($this->app->stickyGET('filter')){
 			switch ($this->app->stickyGET('type')) {
 				case 'surrender':
@@ -106,6 +118,17 @@ class page_reports_loan_bikelegal_bikessra extends Page {
 			$account_model->addCondition($field,'>=',$this->app->stickyGET('from'));
 			$account_model->addCondition($field,'<=',$this->app->nextDate($this->app->stickyGET('to')));
 
+			foreach ($document as $junk) {
+				$doc_id = $document->id;
+				if($_GET['doc_'.$document->id]){
+					$this->api->stickyGET('doc_'.$document->id);
+					$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
+						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->setLimit(1)->fieldQuery('Description');
+					});
+					$grid_column_array[] = $this->api->normalizeName($document['name']);
+				}
+			}
+
 		}else{
 			$account_model->addCondition('id',-1);
 		}
@@ -120,12 +143,20 @@ class page_reports_loan_bikelegal_bikessra extends Page {
 
 		$grid = $this->add('Grid_AccountsBase')->addSno();
 
-		$grid->setModel($account_model,['AccountNumber',$field,'FatherName'.'PermanentAddress','bike_auctioned_on','bike_returned_on','PhoneNos','landmark','tehsil','district','dealer','bike_surrendered_by','total_due']);
+		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(100);
 		$grid->addTotals(['total_due']);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(['filter'=>1,'from'=>$form['from']?:'0','to'=>$form['to']?:'0','type'=>$form['type']])->execute();
+			$send = ['filter'=>1,'from'=>$form['from']?:'0','to'=>$form['to']?:'0','type'=>$form['type']];
+			foreach ($document as $junk) {
+				if($form['doc_'.$document->id])
+					// echo "<pre>";
+					// print_r($form['doc_'.$document->id]);
+					// echo "</pre>";
+					$send['doc_'.$document->id] = $form['doc_'.$document->id];
+			}
+			$grid->js()->reload($send)->execute();
 		}
 
 	}
