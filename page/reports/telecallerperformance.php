@@ -109,6 +109,15 @@ class page_reports_telecallerperformance extends Page {
 				return $transaction_row_model->sum('amountCr');
 			})->type('money');
 
+			$model->addExpression('total_amount')->set(function($m,$q){
+			return $q->expr('(IFNULL([0],0)+IFNULL([1],0))+(IFNULL([2],0)+IFNULL([3],0))',[
+				$m->getElement('loan_amount_deposit'),
+				$m->getElement('penalty_amount_deposit'),
+				$m->getElement('other_amount_deposit'),
+				$m->getElement('recurring_amount')
+			]);
+		})->sortable(true);
+
 			$model->addExpression('to_date_date')->set(function($m,$q){
 				return $q->expr('Date([0])',[$m->getElement('to_date')]);
 			});
@@ -164,7 +173,7 @@ class page_reports_telecallerperformance extends Page {
 		$grid = $this->add('Grid_AccountsBase');
 		$grid->setModel($model);
 		$grid->addSno();
-		$grid->addTotals(['loan_amount_deposit','penalty_amount_deposit','other_amount_deposit','recurring_amount']);
+		$grid->addTotals(['loan_amount_deposit','penalty_amount_deposit','other_amount_deposit','recurring_amount','total_amount']);
 
 		foreach ($documents as $dc) {
 			$grid->addFormatter($this->app->normalizeName($dc),'wrap');
