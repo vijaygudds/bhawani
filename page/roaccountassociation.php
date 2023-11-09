@@ -19,6 +19,7 @@ class page_roaccountassociation extends Page {
 		$this->api->stickyGET('bike_surrendered');
 		$this->api->stickyGET('legal_accounts');
 		$this->api->stickyGET('time_collapse_nonpaid_months');
+		$this->api->stickyGET('associate_ro');
 
 
 		$form=$this->add('Form');
@@ -53,6 +54,7 @@ class page_roaccountassociation extends Page {
 		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
 		$form->addField('dropdown','bike_surrendered')->setValueList(['include'=>'Include / All','exclude'=>'Exclude','only'=>'Only']);
 		$form->addField('dropdown','legal_accounts')->setValueList(['include'=>'Include / All','exclude'=>'Exclude','only'=>'Only']);
+		$form->addField('DropDown','associate_ro','Display Accounts')->setValueList(array('all'=>'ALL','associate_with_ro'=>'Associate with RO','exclude'=>'Associate without RO'));
 		$form->add('HR');
 
 		$document=$this->add('Model_Document');
@@ -76,6 +78,20 @@ class page_roaccountassociation extends Page {
 
 		$account_model->addCondition('DefaultAC',false);
 		$account_model->getElement('mo_id')->caption('RO');
+		if($this->app->stickyGET('associate_ro') == 'associate_with_ro'){
+		}
+
+
+		switch ($_GET['associate_ro']) {
+				// case 'all':
+				// 	break;
+				case 'associate_with_ro':
+					$account_model->addCondition('mo_id','<>',null);
+					break;
+				case 'exclude':
+					$account_model->addCondition('mo_id',null);
+					break;
+			}
 
 		// $account_model_j=$account_model->join('premiums.account_id','id');
 		// $account_model_j->addField('DueDate');
@@ -413,7 +429,7 @@ class page_roaccountassociation extends Page {
 			// if($form['time_collapse_nonpaid_months'] && !is_integer($form['time_collapse_nonpaid_months']))
 			// 	$form->displayError('time_collapse_nonpaid_months','Only Integers');
 
-			$send = array('dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'], 'filter'=>1 ,'legal_accounts'=>$form['legal_accounts'],'bike_surrendered'=>$form['bike_surrendered'],'time_collapse_nonpaid_months'=>$form['time_collapse_nonpaid_months']);
+			$send = array('dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'], 'filter'=>1 ,'legal_accounts'=>$form['legal_accounts'],'bike_surrendered'=>$form['bike_surrendered'],'time_collapse_nonpaid_months'=>$form['time_collapse_nonpaid_months'],'associate_ro'=>$form['associate_ro']);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];
