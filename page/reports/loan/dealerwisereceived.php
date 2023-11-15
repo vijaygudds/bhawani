@@ -55,6 +55,7 @@ class page_reports_loan_dealerwisereceived extends Page {
 		
 		$transaction_row_model->addCondition('amountCr','>',0);
 		$transaction_row_model->addCondition('SchemeType','Loan');
+		// $transaction_row_model->addCondition('dealer_id',153);
 
 		$transaction_row_model->setOrder('account_id desc,created_at desc');
 
@@ -70,12 +71,12 @@ class page_reports_loan_dealerwisereceived extends Page {
 				$transaction_row_model->addCondition('created_at','<=',$this->api->nextDate($_GET['to_date']));
 			}
 
-			$this->api->stickyGET('receive_type');
-			if($_GET['receive_type']){
-				$transaction_row_model->addCondition('transaction_type_name',$_GET['receive_type']);
-			}else{
-				$transaction_row_model->addCondition('transaction_type_name',[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
-			}
+			// $this->api->stickyGET('receive_type');
+			// if($_GET['receive_type']){
+			// 	$transaction_row_model->addCondition('transaction_type_name',$_GET['receive_type']);
+			// }else{
+			// 	$transaction_row_model->addCondition('transaction_type_name',[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
+			// }
 
 			$this->api->stickyGET('loan_type');
 			switch ($_GET['loan_type']) {
@@ -126,14 +127,75 @@ class page_reports_loan_dealerwisereceived extends Page {
 		}else
 			$transaction_row_model->addCondition('id',-1);
 
-		$transaction_row_model->addExpression('sum_amount')->set(function($m,$q){
-			return $q->expr('SUM([0])',[$m->getElement('amountCr')]);
+		// $transaction_row_model->addExpression('sum_amount')->set(function($m,$q){
+		// 	return $q->expr('SUM([0])',[$m->getElement('amountCr')]);
+		// });
+
+			
+
+		$transaction_row_model->addExpression('gstamount',function($m,$q){
+
+			$tr_m = $this->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+			$tr_m->addCondition('id',$m->getElement('id'));
+			$tr_m->addCondition('transaction_type',/*,[65,71]);*/
+								 [
+								'Visit Charge',
+								'LEGAL NOTICE CHARGE RECEIVED',
+								'CHEQUE RETURN CHARGES RECEIVED',
+								'VECHICLE GODOWN RENT RECEIVED',
+								'LEGAL EXPENSES RECEIVED',
+								'LEGAL NOTICE SENT FOR BIKE AUCTION CHARGE RECEIVED',
+								'FINAL RECOVERY NOTICE CHARGE RECEIVED',
+								'CHEQUE RETURN NOTICE CHARGE RECEIVED',
+								'SOCIETY NOTICE CHARGE RECEIVED',
+								'INSURANCE PROCESSING FEES',
+								'NACH REGISTRATION FEES CHARGE RECEIVED',
+								'NACH TRANSACTION FILE CANCELING CHARGE RECEIVED',
+								'NOC HANDLING CHARGE', 
+								'FILE CANCEL CHARGE RECEIVED',
+								'PRINTING & STATIONERY CHARGE RECEIVED',
+								'GST OTHER CHARGE RECEIVED'
+								]);
+			return $tr_m->sum('amountCr');
+			// $received = $tr_m['amountCr'];
+				// $temp  = $g->current_row_html[$f]= $received;
+		});
+		$transaction_row_model->addExpression('penalty_amount',function($m,$q){
+
+			$tr_m = $this->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+			$tr_m->addCondition('id',$m->getElement('id'));
+			
+			$this->api->stickyGET('receive_type');
+			if($_GET['receive_type']){
+				$tr_m->addCondition('transaction_type',$_GET['receive_type']);
+			}else{
+				$tr_m->addCondition('transaction_type',[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
+			}
+			// $tr_m->addCondition('transaction_type',
+			// 					[
+			// 						TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,
+			// 						TRA_PENALTY_AMOUNT_RECEIVED,
+			// 						TRA_OTHER_AMOUNT_RECEIVED
+			// 					]);
+			return $tr_m->sum('amountCr');
+			// $received = $tr_m['amountCr'];
+				// $temp  = $g->current_row_html[$f]= $received;
+		});
+
+		$transaction_row_model->addExpression('gst_amount')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('gstamount')]);
+		});
+		$transaction_row_model->addExpression('deposit_amount')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('penalty_amount')]);
+		});
+		$transaction_row_model->addExpression('total_amount')->set(function($m,$q){
+			return $q->expr('IFNULL([0],0) + IFNULL([1],0)',[$m->getElement('deposit_amount'),$m->getElement('gst_amount')]);
 		});
 
 		$transaction_row_model->_dsql()->group($transaction_row_model->dsql()->expr('[0]',[$transaction_row_model->getElement('dealer_id')]));
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model,array('dealer_name','sum_amount'));
+		$grid->setModel($transaction_row_model,array('dealer_name'/*,'account','amountCr','sum_amount'*/,'deposit_amount','gst_amount'/*,'transaction_type'*/,'total_amount'));
 
 		// $grid->addHook('formatRow',function($g){
 		// 	// $this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));			
@@ -146,7 +208,7 @@ class page_reports_loan_dealerwisereceived extends Page {
 		// $grid->addFormatter('member_address','wrap');
 		$grid->addPaginator(500);
 		$grid->addSno();
-		$grid->addTotals(array('amountCr'));
+		$grid->addTotals(array('amountCr','deposit_amount','total_amount','gst_amount'));
 
 		$js=array(
 			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

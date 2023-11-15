@@ -8,7 +8,7 @@ class page_reports_recovery extends Page {
 		$tabs=$this->add('Tabs');
 		$tab1=$tabs->addTabURL('reports_loan_emiduelist','EMI Due List');
 		$tab1=$tabs->addTabURL('reports_loan_emireceivedlist','EMI Rceceived List');
-		$tab1=$tabs->addTabURL('reports_loan_penaltyandotherreceivedlist','Penalty & Other Received List');
+		// $tab1=$tabs->addTabURL('reports_loan_penaltyandotherreceivedlist','Penalty & Other Received List');
 		$tab1=$tabs->addTabURL('reports_loan_gstreceivedlist','GST Received List');
 		$tab1=$tabs->addTabURL('reports_loan_duestoreceive','Dues To Receive List');
 		// $tab1=$tabs->addTabURL('reports_loan_insuranceduelist','Insurance Due List');
