@@ -51,7 +51,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','report_type')->setValueList(array('ALL'=>'ALL','nodues'=>'0 EMI DUE','duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
+		$form->addField('dropdown','report_type')->setValueList(array('ALL'=>'ALL','nodues'=>'0 EMI DUE','nonstarter'=>'Non Starter','duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
 		$form->addField('Number','time_collapse_nonpaid_months');
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','hl'=>'HL','other'=>'Other'));
 		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
@@ -132,6 +132,10 @@ class page_reports_loan_emiduelist extends Page {
 		$account_model->addExpression('last_premium')->set(function($m,$q){
 			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('DueDate');
 			return "'last_premium'";
+		});
+		$account_model->addExpression('Paid')->set(function($m,$q){
+			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('Paid');
+			// return "'last_premium'";
 		});
 
 		$account_model->addExpression('emi_amount')->set(function($m,$q){
@@ -359,8 +363,14 @@ class page_reports_loan_emiduelist extends Page {
 						//$account_model->addCondition('due_premium_count','<=',2);
 						$account_model->addCondition('last_premium','>=',$to_date);
 						break;
-					case 'duelist':
+					case 'nonstarter':
+						$account_model->addCondition('paid_premium_count','=',0);
+						// $account_model->addCondition('due_premium_count','>=',1);
 						$account_model->addCondition('due_premium_count','>',0);
+						$account_model->addCondition('last_premium','>=',$to_date);
+						// $account_model->addCondition('last_premium','<>',null);
+						break;	
+					case 'duelist':
 						$account_model->addCondition('due_premium_count','<=',2);
 						$account_model->addCondition('last_premium','>=',$to_date);
 						break;
