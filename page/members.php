@@ -20,7 +20,13 @@ class page_members extends Page {
 		$member_model->getElement('RelationWithParent')->destroy();
 		$member_model->getElement('MinorDOB')->destroy();
 		$member_model->getElement('Nominee')->destroy();
-		
+
+		$member_model->addExpression('sm_account')->set(function($m,$q){
+			$acc = $m->add('Model_Account_SM')
+						->addCondition('member_id',$m->getElement('id'))
+						->setLimit(1);
+			return  $acc->fieldQuery('AccountNumber');
+		});	
 		$member_model->addExpression('sm_nominee_details')->set(function($m,$q){
 			$acc = $m->add('Model_Account_SM')
 						->addCondition('member_id',$m->getElement('id'))
@@ -170,7 +176,8 @@ class page_members extends Page {
 		$form_fields=null;
 
 		if($crud->isEditing()){
-			$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','gstin','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active','form_60_61_is_submitted'];
+			$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','sm_account','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','gstin','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active','form_60_61_is_submitted'];
+
 		}
 		
 		if($crud->isEditing('edit')){
@@ -257,6 +264,7 @@ class page_members extends Page {
 			$g->addPaginator(10);
 			// $g->controller->importField('id');
 			$g->addOrder()->move('member_no','first')->now();
+			$g->addOrder()->move('sm_account','after','name')->now();
 			// $g->addClass('.mygrid');
 			// $g->js('reload')->reload();
 		}

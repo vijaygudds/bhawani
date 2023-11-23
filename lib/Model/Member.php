@@ -27,7 +27,7 @@ class Model_Member extends Model_Table {
 		$this->addField('RelationWithFatherField')->caption('Relation')->enum(['Father','Husband'])->mandatory(true);
 		$this->addField('Cast')->mandatory(true);
 		$this->addField('PermanentAddress')->type('text')->hint('Leave Blank if same as Current Address')->display(array('grid'=>'shorttext'));
-		$this->addField('Occupation')->enum(array('Business','Service','Self-Employed','Student','House Wife'));
+		$this->addField('Occupation')->enum(array('Business','Service','Self-Employed','Student','House Wife','Farmer','Labour'));
 		$this->addField('DOB')->type('date')->mandatory(true);
 		$this->addField('PhoneNos')->mandatory(true);
 		// $this->addField('Age');
