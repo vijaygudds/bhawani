@@ -9,7 +9,8 @@ class page_transactions_tds extends Page {
 		parent::init();
 		$this->rename('a');
 
-		$this->add('Controller_Acl');
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		// Only self branch accounts
 
 		$form = $this->add('Form_Stacked');
