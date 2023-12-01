@@ -20,10 +20,10 @@ class page_reports_agent_tdsfromtable2 extends Page {
 		$form = $this->add('Form');
 		$acc_model = $this->add('Model_Active_Account');
 		$acc_model->addCondition('account_type',['Default','Saving']);
-		$agent_field=$form->addField('autocomplete/Basic','account');
-		$agent_field->setModel($acc_model);
-		$agent_field=$form->addField('autocomplete/Basic','agent');
-		$agent_field->setModel('Agent');
+		$acc_field=$form->addField('autocomplete/Basic','account');
+		$acc_field->setModel($acc_model);
+		// $agent_field=$form->addField('autocomplete/Basic','agent');
+		// $agent_field->setModel('Agent');
 		$supplier_field=$form->addField('autocomplete/Basic','supplier');
 		$supplier_model = $this->add('Model_Supplier');
 		$supplier_model->addCondition('is_active',true);
@@ -321,7 +321,7 @@ class page_reports_agent_tdsfromtable2 extends Page {
 			$model->_dsql()->group($model->dsql()->expr('[0]',[$model->getElement('party_pan_no')]));
 		$grid->addColumn('party','party');
 		$grid->addColumn('pan_nos','pan_nos');
-		$grid->setModel($model,['AccountNumber','account_type','acc_tr_trn_id','to_date_commission','agent_total_commission','agent_trn_id_dr_against_tds_entry','agent_manully_commission','total_commissions','pan_no'/*,'party_name'*/,'pan_nos'/*,'amount_from_TDS'*//*,'agent_tds'*/,'party_pan_no'/*,'tfj','tft','tds_amount_from_tds'*//*,'tds_amount_from_jv'*/,'tds_amount']);
+		$grid->setModel($model,['AccountNumber','account_type','pan_no','pan_nos','party_pan_no','tds_amount'/*,'acc_tr_trn_id'*//*,'to_date_commission'*//*,'agent_total_commission','agent_trn_id_dr_against_tds_entry'*/,/*'agent_manully_commission',*//*'total_commissions'*//*,'party_name'*//*,'amount_from_TDS'*//*,'agent_tds'*//*,'tfj','tft','tds_amount_from_tds'*//*,'tds_amount_from_jv'*/]);
 
 		$grid->addPaginator(1000);
 		$grid->addQuickSearch(['member','AccountNumber']);
