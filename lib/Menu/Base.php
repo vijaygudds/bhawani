@@ -145,6 +145,7 @@ class Menu_Base extends Menu {
 
 		$transactions_sub_menus = $transactions_sub_menus_popover->add('Menu_Vertical');
 		$transactions_sub_menus->addMenuItem('transactions_deposit','Deposit');
+		$transactions_sub_menus->addMenuItem('transactions_tds','TDS');
 		$transactions_sub_menus->addMenuItem('transactions_withdrawl','WithDrawl');
 		$transactions_sub_menus->addMenuItem('transactions_jv','Journal (Transfer)');
 		$transactions_sub_menus->addMenuItem('transactions_forclose','ForClose');

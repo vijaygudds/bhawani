@@ -371,6 +371,7 @@ class page_reports_loan_emiduelist extends Page {
 						// $account_model->addCondition('last_premium','<>',null);
 						break;	
 					case 'duelist':
+						$account_model->addCondition('due_premium_count','>',0);
 						$account_model->addCondition('due_premium_count','<=',2);
 						$account_model->addCondition('last_premium','>=',$to_date);
 						break;

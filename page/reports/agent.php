@@ -17,6 +17,7 @@ class page_reports_agent extends Page {
 		$tab1=$tabs->addTabURL('reports_agent_topten','Top 10 Business');
 		$tab1=$tabs->addTabURL('reports_agent_toptenmember','Top 10 Members');
 		$tab1=$tabs->addTabURL('reports_agent_allagenttds','All Agent TDS');
+		$tab1=$tabs->addTabURL('reports_agent_tdsfromtable2','TDS Report');
 
 	}
 }

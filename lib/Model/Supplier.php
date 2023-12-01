@@ -8,6 +8,7 @@ class Model_Supplier extends Model_Table {
 		$this->addField('name')->caption('Full Name')->mandatory(true);
 		$this->addField('organization');
 		$this->addField('gstin');
+		$this->addField('pan_no')->mandatory(true);
 		$this->addField('address')->type('text')->mandatory(true);
 		$this->addField('email_ids')->type('text')->hint('comma (,) seperated multiple values');
 		$this->addField('phone_nos')->type('text')->hint('comma (,) seperated multiple values');

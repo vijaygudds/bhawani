@@ -48,7 +48,7 @@ class page_accounts_Default extends Page {
 		$account_Default_model->getElement('scheme_id')->system(false)->editable(true);
 		$account_Default_model->getElement('PAndLGroup')->system(false)->editable(true);
 
-		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','ActiveStatus','sig_image_id','PAndLGroup'),array('AccountNumber','scheme','ActiveStatus','member','created_at'));
+		$crud->setModel($account_Default_model,array('AccountNumber','pan_no','member_id','scheme_id','ActiveStatus','sig_image_id','PAndLGroup'),array('AccountNumber','pan_no','scheme','ActiveStatus','member','created_at'));
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'OtherAccounts'));
 		
 		if(!$crud->isEditing()){
