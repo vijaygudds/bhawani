@@ -145,7 +145,6 @@ class Menu_Base extends Menu {
 
 		$transactions_sub_menus = $transactions_sub_menus_popover->add('Menu_Vertical');
 		$transactions_sub_menus->addMenuItem('transactions_deposit','Deposit');
-		$transactions_sub_menus->addMenuItem('transactions_tds','TDS');
 		$transactions_sub_menus->addMenuItem('transactions_withdrawl','WithDrawl');
 		$transactions_sub_menus->addMenuItem('transactions_jv','Journal (Transfer)');
 		$transactions_sub_menus->addMenuItem('transactions_forclose','ForClose');
@@ -161,6 +160,7 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_premature','Pre Mature Payments');
 		$transactions_sub_menus->addMenuItem('transactions_salaryandallowances','Salary & Allowances');
 		$transactions_sub_menus->addMenuItem('transactions_sharetransactions','Share Transactions');
+		$transactions_sub_menus->addMenuItem('transactions_tds','TDS');
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
 		// $books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');
