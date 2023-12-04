@@ -355,7 +355,7 @@ class page_reports_loan_dispatch extends Page {
 
 
 		$account_model->addExpression('cheque_amount')->set(function($m,$q){
-			return $q->expr("[0]-([1]+IFNULL([2],0) + IFNULL([3],0)+IFNULL([4],0)+IFNULL([5],0)+IFNULL([6],0) )",array($m->getElement('Amount'),$m->getElement('file_charge'),$m->getElement('sm_amount')/*,$m->getElement('gst_amount')*/,$m->getElement('insurance_processing_fees_amount'),$m->getElement('sgst_amount'),$m->getElement('cgst_amount'),$m->getElement('loan_interest_recevied')));
+			return $q->expr("[0]-(IFNULL([1],0) + IFNULL([2],0)+IFNULL([3],0)+IFNULL([4],0)+IFNULL([5],0) )",array($m->getElement('Amount'),$m->getElement('sm_amount')/*,$m->getElement('gst_amount')*/,$m->getElement('insurance_processing_fees_amount'),$m->getElement('sgst_amount'),$m->getElement('cgst_amount'),$m->getElement('loan_interest_recevied')));
 		});
 
 		$account_model->addExpression('LoanAgainst')->set(function($m,$q){
