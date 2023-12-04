@@ -121,7 +121,7 @@ class page_reports_loan_dispatch extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','ActiveStatus','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied'/*,'file_charge'*/,'gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount'/*,'insurance_processing_fees_amount1','sm_amount'*/,'cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','ActiveStatus','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied','file_charge','gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount','sm_amount','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -379,7 +379,8 @@ class page_reports_loan_dispatch extends Page {
 		$grid->addPaginator(1000);
 
 		$grid->addTotals(array('total','Amount','file_charge','cheque_amount','emi'));
-
+		$grid->removeColumn('sm_amount');
+		$grid->removeColumn('file_charge');
 		$js=array(
 			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
 			$this->js()->_selector('#header')->toggle(),
