@@ -121,7 +121,7 @@ class page_reports_loan_dispatch extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','ActiveStatus','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied','file_charge','gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount','insurance_processing_fees_amount1','sm_amount','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','ActiveStatus','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied','file_charge','gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount',/*'insurance_processing_fees_amount1','insurance_amount',*/'cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -325,15 +325,15 @@ class page_reports_loan_dispatch extends Page {
 			$trans_m->addCondition('reference_id',$q->getField('id'));
 			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
 			$trans_m->addCondition('account','like','% INSURANCE PROCESSING FEES%');
-			return $trans_m->_dsql()->expr("IF([0]!=' ',[0],[1])",[$trans_m->fieldQuery('amountCr'),$m->getElement('sm_amount')]);
+			return $trans_m->_dsql()->expr("IF([0]!=' ',[0],[1])",[$trans_m->fieldQuery('amountCr'),$m->getElement('insurance_amount')]);
 		});
-		$account_model->addExpression('sm_amount')->set(function($m,$q){
+		$account_model->addExpression('insurance_amount')->set(function($m,$q){
 			$trans_m = $this->add('Model_TransactionRow');
 			$trans_m->addCondition('reference_id',$q->getField('id'));
 			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
-			$trans_m->addCondition('scheme','SHARE CAPITAL');
-			// return $trans_m->fieldQuery('amountCr');
-			return $trans_m->expr("IFNULL([0],0)",array($m->fieldQuery('amountCr')));
+			$trans_m->addCondition('account','like','% INSURANCE FUND%');
+			return $trans_m->fieldQuery('amountCr');
+			// return $trans_m->expr("IFNULL([0],0)",array($m->fieldQuery('amountCr')));
 		});
 
 
