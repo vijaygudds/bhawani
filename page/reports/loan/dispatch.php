@@ -121,7 +121,7 @@ class page_reports_loan_dispatch extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','ActiveStatus','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied','file_charge','gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','ActiveStatus','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','loan_interest_recevied'/*,'file_charge'*/,'gst_amount','cgst_amount','sgst_amount','insurance_processing_fees_amount'/*,'insurance_processing_fees_amount1','sm_amount'*/,'cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -211,6 +211,26 @@ class page_reports_loan_dispatch extends Page {
 			return $q->expr("if([0]=1,[1]/100.0*[2],[2])",array($s->fieldQuery('ProcessingFeesinPercent'),$m->getElement('Amount'),$s->fieldQuery('ProcessingFees')));
 		});
 
+		// $account_model->addExpression('loan_interest_recevied')->set(function($m,$q){
+		// 	// $trans_m = $this->add('Model_Transaction');
+		// 	// $trans_m->addCondition('reference_id',$q->getField('id'));
+		// 	// $trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
+		// 	// $tr_j
+		// 	// $trans_m->tryLoadAny();
+		// 	$tr_row = $this->add('Model_TransactionRow');
+		// 	$tr = $tr_row->join('transactions','transaction_id');
+		// 	$tr->addField('vl_account','reference_id');
+		// 	$tr->addField('tr_tran_type','transaction_type_id');
+
+		// 	$tr_row->addCondition('vl_account',$q->getField('id'));
+		// 	$tr_row->addCondition('tr_tran_type',8);
+		// 	// $tr_row->setLimit(1);
+		// 	$tr_row->addCondition('account_id','in',[275866,275869,275863,275862,275868,275864,275867,275865,275861]);
+		// 	// $tr_row->addCondition('account','like', "%".$this->api->currentBranch['Code']." "."INTEREST RECEIVED ON LOAN %");
+		// 	// return $tr_row->_dsql()->expr("IF([0]='0',[0],[1])",[$tr_row->fieldQuery('amountCr'),$m->getElement('file_charge')]);
+		// 	return $tr_row->fieldQuery('amountCr');//->count()->getOne();
+		// 	// return $tr_row->sum('amountCr');
+		// });
 		$account_model->addExpression('loan_interest_recevied')->set(function($m,$q){
 			// $trans_m = $this->add('Model_Transaction');
 			// $trans_m->addCondition('reference_id',$q->getField('id'));
@@ -227,9 +247,26 @@ class page_reports_loan_dispatch extends Page {
 			// $tr_row->setLimit(1);
 			$tr_row->addCondition('account_id','in',[275866,275869,275863,275862,275868,275864,275867,275865,275861]);
 			// $tr_row->addCondition('account','like', "%".$this->api->currentBranch['Code']." "."INTEREST RECEIVED ON LOAN %");
-			return $tr_row->fieldQuery('amountCr');//->count()->getOne();
+			return $tr_row->_dsql()->expr("IF([0]!=' ',[0],[1])",[$tr_row->fieldQuery('amountCr'),$m->getElement('file_charge')]);
+			// return $tr_row->fieldQuery('amountCr');//->count()->getOne();
 			// return $tr_row->sum('amountCr');
 		});
+
+		// $grid->addMethod('format_loan_interest_recevie',function($g,$f){
+		// 	if($g->model['loan_interest_recevied'] > '0' OR !$g->model['file_charge']){
+		// 		$g->current_row[$f] = $g->model['loan_interest_recevied'];
+		// 	}else{
+		// 		$g->current_row[$f] = $g->model['file_charge'];
+				
+		// 	}
+		// 	// if($g->model['sm_amount']){
+
+		// 	// }
+
+
+		// });	
+
+		// $grid->addColumn('loan_interest_recevie','loan_interest_recevie');
 
 		$account_model->addExpression('sm_amount')->set(function($m,$q){
 			$trans_m = $this->add('Model_TransactionRow');
@@ -275,15 +312,46 @@ class page_reports_loan_dispatch extends Page {
 		// 	return $q->expr("IFNULL([0],0) + IFNULL([1],0) )",array($m->getElement('cgst_amount'),$m->getElement('sgst_amount')));
 		// });
 
+		// $account_model->addExpression('insurance_processing_fees_amount')->set(function($m,$q){
+		// 	$trans_m = $this->add('Model_TransactionRow');
+		// 	$trans_m->addCondition('reference_id',$q->getField('id'));
+		// 	$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
+		// 	$trans_m->addCondition('account','like','% INSURANCE PROCESSING FEES%');
+		// 	return $q->expr('IFNULL([0],0)',[$trans_m->sum('amountCr')]);
+		// });
+
 		$account_model->addExpression('insurance_processing_fees_amount')->set(function($m,$q){
 			$trans_m = $this->add('Model_TransactionRow');
 			$trans_m->addCondition('reference_id',$q->getField('id'));
 			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
 			$trans_m->addCondition('account','like','% INSURANCE PROCESSING FEES%');
-			return $q->expr('IFNULL([0],0)',[$trans_m->sum('amountCr')]);
+			return $trans_m->_dsql()->expr("IF([0]!=' ',[0],[1])",[$trans_m->fieldQuery('amountCr'),$m->getElement('sm_amount')]);
+		});
+		$account_model->addExpression('sm_amount')->set(function($m,$q){
+			$trans_m = $this->add('Model_TransactionRow');
+			$trans_m->addCondition('reference_id',$q->getField('id'));
+			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
+			$trans_m->addCondition('scheme','SHARE CAPITAL');
+			// return $trans_m->fieldQuery('amountCr');
+			return $trans_m->expr("IFNULL([0],0)",array($m->fieldQuery('amountCr')));
 		});
 
 
+		// $grid->addMethod('format_insurance_processing_amount',function($g,$f){
+		// 	if($g->model['insurance_processing_fees_amount'] > '0' OR !$g->model['sm_amount']){
+		// 		$g->current_row[$f] = $g->model['insurance_processing_fees_amount'];
+		// 	}else{
+		// 		$g->current_row[$f] = $g->model['sm_amount'];
+
+		// 	}
+		// 	// if($g->model['sm_amount']){
+
+		// 	// }
+
+
+		// });	
+
+		// $grid->addColumn('insurance_processing_amount','insurance_processing_amount');
 
 
 		$account_model->addExpression('cheque_amount')->set(function($m,$q){
@@ -304,7 +372,8 @@ class page_reports_loan_dispatch extends Page {
 		$grid->addColumn('myTotal','total');
 
 		$order=$grid->addOrder();//->move('deposit','before','dr_sum')->now();
-		// $order->move('file_charge','after','Amount')->now();
+		// $order->move('insurance_processing_amount','before','cheque_amount')->now();
+		// $order->move('loan_interest_recevie','after','file_charge')->now();
 		// $order->move('cheque_amount','after','file_charge')->now();
 
 		$grid->addPaginator(1000);
