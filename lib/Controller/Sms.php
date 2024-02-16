@@ -22,9 +22,9 @@ class Controller_Sms extends AbstractController{
 
 
 
-//echo $url;
-//	var_dump($curl->get($url));
-		return $curl->get($url);
+//#echo $url;
+	//var_dump($curl->get($url));
+	return $curl->get($url);
 	}
 }
 

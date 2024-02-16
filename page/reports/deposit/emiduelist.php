@@ -157,7 +157,7 @@ class page_reports_deposit_emiduelist extends Page {
 
 		// $grid->addColumn('balance','balance');
 
-		$paginator = $grid->addPaginator(500);
+		$paginator = $grid->addPaginator(3000);
 		$grid->skip_var = $paginator->skip_var;
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

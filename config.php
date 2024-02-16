@@ -1,5 +1,5 @@
 <?php
-$pdo = $config['dsn']='mysql://root:voipinfotech@2019@127.0.0.1/bhawani_xbank';
+$pdo = $config['dsn']='mysql://root:bhawani@2507@127.0.0.1/bhawani_xbank';
 //$pdo = $config['dsn']='mysql://root:voipinfotech@2019@108.62.122.47/bhawani_xbank';
 
 
