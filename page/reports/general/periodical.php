@@ -17,6 +17,7 @@ class page_reports_general_periodical extends Page {
 			$this->api->stickyGET("to_date");
 			$this->api->stickyGET("dealer");
 			$this->api->stickyGET("agent");
+			$this->api->stickyGET("member");
 			$this->js()->univ()->frameURL('Accounts',$this->api->url('./accounts',array('account_type'=>$_GET['accounts'])))->execute();
 		}
 
@@ -25,6 +26,8 @@ class page_reports_general_periodical extends Page {
 		$dealer_field->setModel('Dealer');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
+		$member_field=$form->addField('autocomplete/Basic','member');
+		$member_field->setModel('Member');
 		$mo_field = $form->addField('autocomplete/Basic','mo');
 		$mo_field->setModel('Mo');
 
@@ -75,6 +78,10 @@ class page_reports_general_periodical extends Page {
 			if($_GET['agent']){
 				$this->api->stickyGET("agent");
 				$account_model->addCondition('agent_id',$_GET['agent']);
+			}
+			if($_GET['member']){
+				$this->api->stickyGET("member");
+				$account_model->addCondition('member_id',$_GET['member']);
 			}
 
 			if($_GET['mo_id']){
@@ -156,6 +163,10 @@ class page_reports_general_periodical extends Page {
 					if($_GET['agent']){
 						$p->api->stickyGET("agent");
 						$account_model->addCondition('agent_id',$_GET['agent']);
+					}
+					if($_GET['member']){
+						$p->api->stickyGET("member");
+						$account_model->addCondition('member_id',$_GET['member']);
 					}
 
 					if($_GET['mo_id']){
@@ -241,7 +252,7 @@ class page_reports_general_periodical extends Page {
 		// $grid->js('click',$js);
 		
 		if($form->isSubmitted()){
-			$send_array = array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'team_id'=>$form['team'],'mo_id'=>$form['mo'],'new_or_renew'=>$form['new_or_renew'],'status'=>$form['status'],'filter'=>1);
+			$send_array = array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'member'=>$form['member'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'team_id'=>$form['team'],'mo_id'=>$form['mo'],'new_or_renew'=>$form['new_or_renew'],'status'=>$form['status'],'filter'=>1);
 			if($this->app->currentStaff->isSuper()){
 				$send_array['branch_id'] = $form['branch_id'];
 			}
