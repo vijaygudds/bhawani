@@ -400,9 +400,9 @@ class Frontend extends ApiFrontend {
 
                     break;
                 case PREMIUM_COMMISSION:
-                    if(count($commArray)  <= 1){
-                        throw new Exception("Premium must start from second Commission");
-                    }
+                    // if(count($commArray)  <= 1){
+                    //     throw new Exception("Premium must start from second Commission");
+                    // }
 
                     if($PremiumNumber >= count($commArray)){
                         $commArray[$PremiumNumber]=$commArray[count($commArray)-1];
