@@ -135,8 +135,13 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 			$case_m->addCondition('account_id',$q->getField('id'));
 			return $case_m->fieldQuery('autorised_person'); 
 		});
+		$account_model->addExpression('court')->set(function($m,$q){
+			$case_m = $m->add('Model_LegalCase',array('table_alias'=>'lga_Case_authorize'));
+			$case_m->addCondition('account_id',$q->getField('id'));
+			return $case_m->fieldQuery('court'); 
+		});
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','created_at','legal_process_given_date','legal_filing_date','legal_case_finalised_on','is_in_legal','is_given_for_legal_process','legal_case_no','autorised_person','advocate'];
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','created_at','legal_process_given_date','legal_filing_date','legal_case_finalised_on','is_in_legal','is_given_for_legal_process','court','legal_case_no','autorised_person','advocate'];
 
 		if($this->api->stickyGET('filter')){
 			if($this->api->stickyGET('dealer')){
