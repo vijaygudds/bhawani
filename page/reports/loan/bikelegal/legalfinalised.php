@@ -120,8 +120,23 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 		// $account_model->addExpression('total_due')->set(function($m,$q){
 		// 	return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		// });
+		$account_model->addExpression('legal_case_no')->set(function($m,$q){
+			$case_m = $m->add('Model_LegalCase',array('table_alias'=>'lga_Case_no'));
+			$case_m->addCondition('account_id',$q->getField('id'));
+			return $case_m->fieldQuery('name'); 
+		});
+		$account_model->addExpression('advocate')->set(function($m,$q){
+			$case_m = $m->add('Model_LegalCase',array('table_alias'=>'lga_Case_advocare'));
+			$case_m->addCondition('account_id',$q->getField('id'));
+			return $case_m->fieldQuery('advocate'); 
+		});
+		$account_model->addExpression('autorised_person')->set(function($m,$q){
+			$case_m = $m->add('Model_LegalCase',array('table_alias'=>'lga_Case_authorize'));
+			$case_m->addCondition('account_id',$q->getField('id'));
+			return $case_m->fieldQuery('autorised_person'); 
+		});
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','created_at','legal_process_given_date','legal_filing_date','legal_case_finalised_on','is_in_legal','is_given_for_legal_process'];
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','created_at','legal_process_given_date','legal_filing_date','legal_case_finalised_on','is_in_legal','is_given_for_legal_process','legal_case_no','autorised_person','advocate'];
 
 		if($this->api->stickyGET('filter')){
 			if($this->api->stickyGET('dealer')){
