@@ -195,7 +195,7 @@ class Model_Account_Loan extends Model_Account{
 			$account = $this->add('Model_Account');
 			if($sm_amount){
 				$account->addCondition('branch_id',$this->api->currentBranch['id']
-					)->addCondition('AccountNumber','like',$this->api->currentBranch['Code']." "."INSURANCE FUND")
+					)->addCondition('AccountNumber','like',$this->api->currentBranch['Code']." "."INSURANCE PROCESSING FEES")
 					// )->addCondition('AccountNumber','like',$this->api->currentBranch['Code']." "."INTEREST RECEIVED ON LOAN")
 				->setLimit(1)->tryLoadAny();
 				if(!$account->loaded()){
