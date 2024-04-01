@@ -196,10 +196,12 @@ class Model_Account_Loan extends Model_Account{
 			if($sm_amount){
 				$account->addCondition('branch_id',$this->api->currentBranch['id']
 					)->addCondition('AccountNumber','like',$this->api->currentBranch['Code']." "."INSURANCE PROCESSING FEES")
+					// )->addCondition('AccountNumber','like',$this->api->currentBranch['Code']." "."INSURANCE FUND")
 					// )->addCondition('AccountNumber','like',$this->api->currentBranch['Code']." "."INTEREST RECEIVED ON LOAN")
 				->setLimit(1)->tryLoadAny();
 				if(!$account->loaded()){
-					throw new \Exception($this->api->currentBranch['Code']." INSURANCE FUND NOT LOADED");
+					// throw new \Exception($this->api->currentBranch['Code']." INSURANCE FUND NOT LOADED");
+					throw new \Exception($this->api->currentBranch['Code']." INSURANCE PROCESSING FEES");
 				}			
 			}
 
@@ -222,8 +224,32 @@ class Model_Account_Loan extends Model_Account{
 			$transaction->addCreditAccount($this['branch_code'] . SP . PROCESSING_FEE_RECEIVED . SP. $this['scheme_name'], $ProcessingFees);
 		}
 		if($sm_amount){
-			$transaction->addCreditAccount($account, $sm_amount);
-			$AccountCredit = $AccountCredit - $sm_amount;
+			// $transaction->addCreditAccount($account, $sm_amount);
+			// // $AccountCredit = $AccountCredit - $sm_amount;
+			$sgst_account_number = $this->api->currentBranch['Code'].SP."SGST 9%";
+			$cgst_account_number = $this->api->currentBranch['Code'].SP."CGST 9%";
+
+			$sgst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$sgst_account_number);
+			$sgst_account_model->tryLoadAny();
+			if(!$sgst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$sgst_account_number." )");
+
+			$cgst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$cgst_account_number);
+			$cgst_account_model->tryLoadAny();
+			if(!$cgst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$cgst_account_number." )");
+
+			// calculate 18% from other_account_cr_amount and remain remaining amount to other_account_cr_amount
+			$tax = 118;
+			$tax_excluded_amount = (($sm_amount/$tax)*100);
+			$gst_tax_amount = round( (($sm_amount - $tax_excluded_amount)/2) ,2);
+			$other_insurance_amount = $sm_amount - ($gst_tax_amount * 2);
+
+			
+			$transaction->addCreditAccount($cgst_account_model,$gst_tax_amount);
+			$transaction->addCreditAccount($sgst_account_model,$gst_tax_amount);
+			$transaction->addCreditAccount($account, $other_insurance_amount);
+			// $AccountCredit = $AccountCredit - $sm_amount;
+			$AccountCredit = $AccountCredit - $other_insurance_amount - ($gst_tax_amount * 2);
+			
 		}
 
 		if($other_account_cr_amount){
@@ -255,7 +281,7 @@ class Model_Account_Loan extends Model_Account{
 
 			$AccountCredit = $AccountCredit - $other_account_cr_amount /*- ($gst_tax_amount * 2)*/;
 		}
-
+		// throw new \Exception('credit side '. $AccountCredit .'------ Debit'.$this['Amount']);
 		$transaction->addCreditAccount($loan_from_other_account, $AccountCredit);
 		
 		$transaction->execute();
