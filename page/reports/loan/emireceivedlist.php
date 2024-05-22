@@ -179,7 +179,7 @@ class page_reports_loan_emireceivedlist extends Page {
 		$grid->removeColumn('is_given_for_legal_process');
 		// $grid->addFormatter('member_name','wrap');
 		$grid->addFormatter('member_address','wrap');
-		$grid->addPaginator(500);
+		$grid->addPaginator(5000);
 		$grid->addSno();
 		$grid->addTotals(array('amountCr'));
 
