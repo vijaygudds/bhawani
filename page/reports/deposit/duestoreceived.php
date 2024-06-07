@@ -127,7 +127,7 @@ class page_reports_deposit_duestoreceived extends Page {
 		// $grid->addColumn('balance','balance');
 
 		$grid->addPaginator(500);
-
+		$grid->addTotals(array('premium_amount','total'));
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
 		// 	$this->js()->_selector('#header')->toggle(),
