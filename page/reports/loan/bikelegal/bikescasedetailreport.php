@@ -162,11 +162,22 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 					->setLimit(1)
 					->fieldQuery('case_on');
 		});
+		$account_model->addExpression('court')->set(function($m,$q){
+			return $this->add('Model_LegalCaseHearing')
+					->addCondition('account_id',$m->getElement('id'))
+					->setLimit(1)
+					->fieldQuery('court');
+		});
 		$account_model->addExpression('case_type')->set(function($m,$q){
 			return $this->add('Model_LegalCaseHearing')
 					->addCondition('account_id',$m->getElement('id'))
 					->setLimit(1)
 					->fieldQuery('case_type');
+		});$account_model->addExpression('amount')->set(function($m,$q){
+			return $this->add('Model_LegalCaseHearing')
+					->addCondition('account_id',$m->getElement('id'))
+					->setLimit(1)
+					->fieldQuery('amount');
 		});
 		$account_model->addExpression('account_guarantor')->set(function($m,$q){
 			return $m->refSQL('AccountGuarantor')->setLimit(1)->fieldQuery('member');
@@ -234,7 +245,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 		});
 		
 
-		$grid_column_array = ['AccountNumber','member','Cast','FatherName','PermanentAddress','pin_code','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','bike_auctioned_on','Amount','no_of_emi','paid_emi','emi_amount','premium_amount_received','current_balance','created_at','ActiveStatus','maturity_date','last_hearing_stage','cheque_presented_in_bank_on','cheque_returned_on','notice_sent_after_cheque_returned_on','account_guarantor','gurantor_sm_account','account_member_id','guarantor_fathername','gurantor_cast','gurantor_phone_number','gurantor_Address','gurantor_pin_code','legalcase_remark'];
+		$grid_column_array = ['AccountNumber','member','Cast','FatherName','PermanentAddress','pin_code','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','bike_auctioned_on','Amount','no_of_emi','paid_emi','emi_amount','premium_amount_received','current_balance','created_at','ActiveStatus','maturity_date','court','case_on','case_type','amount','last_hearing_stage','cheque_presented_in_bank_on','cheque_returned_on','notice_sent_after_cheque_returned_on','account_guarantor','gurantor_sm_account','account_member_id','guarantor_fathername','gurantor_cast','gurantor_phone_number','gurantor_Address','gurantor_pin_code','legalcase_remark'];
 
 		//$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','premium_amount_received','current_balance','created_at','ActiveStatus','maturity_date','last_hearing_stage'];
 		// $grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at','ActiveStatus','last_hearing_stage'];

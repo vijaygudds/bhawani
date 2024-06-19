@@ -24,6 +24,7 @@ class Model_LegalCaseHearing extends Model_Table {
 		$this->addExpression('advocate')->set($this->refSQL('legalcase_id')->fieldQuery('advocate'));
 		$this->addExpression('account_guarantor')->set($this->refSQL('legalcase_id')->fieldQuery('account_guarantor'));
 		$this->addExpression('bccs_file_no')->set($this->refSQL('legalcase_id')->fieldQuery('bccs_file_no'));
+		$this->addExpression('amount')->set($this->refSQL('legalcase_id')->fieldQuery('amount'));
 
 		$this->addExpression('owner')->set(function ($m,$q){
 			return $this->add('Model_Account')
